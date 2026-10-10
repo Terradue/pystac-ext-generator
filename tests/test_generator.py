@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import GenericAlias, ModuleType
 from typing import Any, get_type_hints
+from unittest.mock import patch
 
 import jsonschema
 import pystac
@@ -39,11 +40,15 @@ def schema(name: str) -> dict[str, Any]:
     return document
 
 
-def module(document: dict[str, Any], *, prefix: str | None = None) -> ModuleType:
+def module(
+    document: dict[str, Any], *, prefix: str | None = None, include_validation: bool = True
+) -> ModuleType:
     """Compile generated source into an isolated module for behavioral tests."""
-    code, _ = generate(document, prefix=prefix)
+    code, _ = generate(document, prefix=prefix, include_validation=include_validation)
     mod = ModuleType("generated")
-    exec(compile(code, "generated.py", "exec"), mod.__dict__)
+    # Dataclasses resolve postponed annotations through the normal import registry.
+    with patch.dict("sys.modules", {mod.__name__: mod}):
+        exec(compile(code, "generated.py", "exec"), mod.__dict__)
     return mod
 
 

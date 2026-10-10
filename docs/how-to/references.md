@@ -60,8 +60,10 @@ Each HTTP operation has a 30-second timeout. Bundling accepts at most 100
 external documents and requires compatible schema dialects.
 
 Bundling embeds the external documents and rewrites their references into local
-JSON Pointers. Generated modules can then validate the extension without fetching
-those resources. The root `$id` remains the registration identifier.
+JSON Pointers. Add `--include-validation` to emit an offline extension validator
+using the bundled schema. Without that flag, normal full-object validation stays
+with PySTAC and its schema resolver; nested union decoding embeds the schema only
+when it needs it. The root `$id` remains the registration identifier.
 
 ## Regenerate reproducibly
 

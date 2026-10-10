@@ -30,8 +30,8 @@ pystac-ext-generator schema.json -o extension.py
 ```
 
 Import the generated class from `extension.py` and use its `ext()` method to wrap
-a PySTAC object. The generated module embeds the schema for extension validation
-and runs independently of the generator.
+a PySTAC object. The generated module runs independently of the generator.
+Embedded offline schema validation is available with `--include-validation`.
 
 ## Start here
 
@@ -42,5 +42,7 @@ and runs independently of the generator.
 - [Look up CLI options](reference/cli.md) or the [Python API](reference/api.md).
 - [Understand schema discovery and validation](explanation/architecture.md).
 
-Python 3.10 or later is required. A generated module uses PySTAC and jsonschema
-at runtime; it does not require Click, Jinja2, or `pystac-ext-generator`.
+Python 3.10 or later is required. Lean modules such as Themes need only PySTAC.
+Embedded validation and schema-dependent union decoding additionally need jsonschema;
+wide factories use typing-extensions. Generated code never requires Click, Jinja2,
+Ruff, or `pystac-ext-generator`.

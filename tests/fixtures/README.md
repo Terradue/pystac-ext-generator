@@ -25,3 +25,9 @@ Nested value classes were checked against:
 https://github.com/stac-utils/pystac/blob/main/extensions/render/pystac/extensions/render.py
 The Render fixture is v2.1.0; parity tests use fields shared with the inspected
 handwritten v2.0.0 implementation.
+
+The Themes v1.0.0 fixture was retrieved on 2026-10-10 from
+https://stac-extensions.github.io/themes/v1.0.0/schema.json.
+The corresponding schema license is in `licenses/themes.txt`.
+Generated Themes serialization is compared with the public API patterns at
+https://github.com/Terradue/pystac-ext-themes/blob/main/src/pystac/extensions/themes.py.

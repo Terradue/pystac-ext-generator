@@ -41,8 +41,13 @@ Copy the generated `.py` module into your application or package and install its
 runtime dependencies:
 
 ```bash
-python -m pip install "pystac>=1.12,<2" "jsonschema>=4.23,<5"
+python -m pip install "pystac>=1.12,<2"
 ```
+
+Also install `jsonschema>=4.23,<5` if you enable embedded validation or the module
+uses schema-based nested union decoding. Large nested factories use
+`typing-extensions>=4.12,<5` for typed keyword arguments. Ruff is a generation-time
+dependency only.
 
 Import classes from the generated module's name. For example,
 `quality_extension.py` provides `from quality_extension import QualityExtension`

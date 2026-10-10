@@ -19,6 +19,10 @@ from __future__ import annotations
 import ast
 import json
 import re
+
+# Fixed Ruff commands receive generated source on stdin.
+import subprocess  # nosec B404
+import sys
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Environment, PackageLoader, StrictUndefined
@@ -38,16 +42,19 @@ def generate(
     document: dict[str, Any],
     *,
     prefix: str | None = None,
+    include_validation: bool = False,
 ) -> tuple[str, list[str]]:
     """Return Python source and diagnostics. No generated code is executed.
 
     The schema title determines the extension class name and its canonical $id
     determines registration. Fields and applicable STAC objects are discovered
-    from schema paths and references. Validation retains the original schema.
+    from schema paths and references. Embedded offline validation is opt-in.
 
     Args:
         document: Full extension schema with a nonempty title and HTTP(S) $id.
         prefix: Optional namespace filter, without the colon.
+        include_validation: Embed the schema and a validate() method. Union
+            decoding may require the schema even when this is false.
 
     Raises:
         SchemaError: If the schema, namespace, class name, or references cannot be supported.
@@ -73,19 +80,28 @@ def generate(
         lstrip_blocks=True,
     )
     env.filters["py"] = repr
-    env.filters["optional"] = lambda value: "None" if value == "None" else value + " | None"
+    env.filters["optional"] = lambda value: _annotation_union(value, "None")
+    env.filters["update_type"] = lambda value: _annotation_union(value, "_Unset", "None")
+    env.filters["create_type"] = lambda value: _annotation_union(value, "_Unset")
     source = env.get_template("extension.py.j2").render(
         class_name=class_name,
         fields=fields,
         uri=uri,
         models=builder.models,
+        include_validation=include_validation,
+        codec_kinds=set().union(
+            *(_codec_kinds(field.codec) for field in fields),
+            *(_codec_kinds(member.codec) for model in builder.models for member in model.members),
+        ),
+        target_types=_target_types(fields),
+        target_annotation=" | ".join("pystac." + name for name, _ in _target_types(fields)),
         document_json=json.dumps(document, ensure_ascii=True, allow_nan=False),
         targets=sorted(set().union(*(f.targets for f in fields))),
         field_targets={f.key: sorted(f.targets) for f in fields},
         field_names={f.name: f.key for f in fields},
     )
     ast.parse(source)
-    return source, sorted(schema.warnings)
+    return _format_source(source), sorted(schema.warnings)
 
 
 def _validate_document(document: dict[str, Any]) -> None:
@@ -146,3 +162,83 @@ def _build_models(schema: Schema, fields: Sequence[Field], class_name: str) -> M
             chosen = builder.build({"anyOf": candidates}, field.name)
         field.annotation, field.codec = chosen.annotation, chosen.codec
     return builder
+
+
+def _target_types(fields: Sequence[Field]) -> list[tuple[str, str]]:
+    targets = {target for field in fields for target in field.targets}
+    available = (
+        ("Collection", "collection"),
+        ("Catalog", "catalog"),
+        ("Item", "item"),
+        ("Asset", "asset"),
+        ("ItemAssetDefinition", "item_asset"),
+        ("Link", "link"),
+    )
+    return [(name, target) for name, target in available if target in targets] or [
+        ("Collection", "collection")
+    ]
+
+
+def _codec_kinds(codec: object) -> set[str]:
+    """Collect only runtime conversions needed by a generated field or member."""
+    if not isinstance(codec, list) or not codec:
+        return set()
+    kind = codec[0]
+    if not isinstance(kind, str):
+        raise SchemaError("Invalid internal conversion kind")
+    kinds = {kind}
+    if kind in {"list", "map"}:
+        kinds |= _codec_kinds(codec[1])
+    elif kind == "union":
+        for branch in codec[1]:
+            kinds |= _codec_kinds(branch[1])
+    return kinds
+
+
+def _union_members(node: ast.expr) -> list[str]:
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+        return [*_union_members(node.left), *_union_members(node.right)]
+    return [ast.unparse(node)]
+
+
+def _annotation_union(annotation: str, *additional: str) -> str:
+    """Add top-level union members without changing nested nullable types."""
+    members = list(
+        dict.fromkeys([*_union_members(ast.parse(annotation, mode="eval").body), *additional])
+    )
+    if "None" in members:
+        members.remove("None")
+        members.append("None")
+    return " | ".join(members)
+
+
+def _format_source(source: str) -> str:
+    """Normalize imports and format generated source without executing it."""
+    commands = (
+        ("check", "--select", "I,F401", "--fix"),
+        ("format", "--line-length", "100"),
+    )
+    for command in commands:
+        # Only fixed Ruff arguments are executed; schema-derived source is stdin.
+        result = subprocess.run(  # nosec B603
+            [
+                sys.executable,
+                "-m",
+                "ruff",
+                *command,
+                "--isolated",
+                "--target-version",
+                "py310",
+                "--stdin-filename",
+                "generated.py",
+                "-",
+            ],
+            input=source,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode:
+            raise SchemaError(f"Could not format generated Python: {result.stderr.strip()}")
+        source = result.stdout
+    return source

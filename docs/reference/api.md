@@ -25,15 +25,17 @@ from pathlib import Path
 from pystac_ext_generator import generate
 
 schema = json.loads(Path("quality-schema.json").read_text(encoding="utf-8"))
-source, warnings = generate(schema)
+source, warnings = generate(schema, include_validation=True)
 Path("quality_extension.py").write_text(source, encoding="utf-8")
 for warning in warnings:
     print(warning)
 ```
 
 `generate()` returns source text and diagnostics. It checks the generated Python's
-syntax without executing it. The only optional generation parameter is `prefix`,
-which filters field namespaces while retaining the complete validation schema.
+syntax without executing it, then normalizes imports and formats the source with Ruff.
+`prefix` filters field namespaces. `include_validation=True` adds a standalone
+offline validator; its default is false. The full schema is retained whenever
+validation or nested union decoding requires it.
 
 ## Generation
 

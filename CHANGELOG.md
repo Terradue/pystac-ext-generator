@@ -23,25 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-### Added
-
-## [1.0.0] - 2026-10-05
+## [1.0.0] - 2026-10-10
 
 ### Added
 
 - Initial project release.
 
-[Unreleased]: https://github.com/Terradue/pystac-ext-insar/compare/1.0.0...HEAD
-[1.0.0]: https://github.com/Terradue/pystac-ext-insar/releases/tag/1.0.0
+[Unreleased]: https://github.com/Terradue/pystac-ext-generator/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/Terradue/pystac-ext-generator/releases/tag/1.0.0

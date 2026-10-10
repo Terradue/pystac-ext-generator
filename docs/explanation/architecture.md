@@ -53,13 +53,17 @@ Call the generated class's `ext()` method directly. Generation does not install
 into `pystac.extensions`, register an `item.ext` accessor, or provide migration
 hooks. Extension membership checks the exact canonical schema version.
 
-Generated modules depend on PySTAC and jsonschema. They embed their schema and
-conversion metadata, so the generator and its template engine are not runtime
-dependencies. Bundling external references enables offline extension validation.
+Lean output contains PySTAC wrappers and only the required conversion helpers.
+Themes needs no jsonschema dependency or embedded schema. `--include-validation`
+adds an offline extension validator. Nested object unions also embed the schema
+and use jsonschema when matching a representation requires validation. Wide
+factory signatures use typing-extensions. The generator, Ruff, and the template
+engine are not dependencies of emitted modules.
 
 ## Validation boundaries
 
-Generation validates the schema itself and parses the generated Python source.
+Generation validates the schema itself, parses the generated Python source,
+normalizes imports, and formats it with Ruff.
 It does not execute the emitted module or validate future data values.
 
 At runtime, property annotations describe expected values. Setters and `apply()`
@@ -68,14 +72,17 @@ targets before mutation, then assigns values; it is not a general transactional
 update if serialization of a later value fails. Nested factories enforce the
 presence of unconditional required arguments.
 
-Call `extension.validate()` to check the complete wrapped object against the
-embedded extension schema, including bounds, formats, and conditional constraints.
+By default, use PySTAC's `item.validate()` or the equivalent owning-object method
+for schema validation. This uses PySTAC's normal registered-schema resolver.
+When generated with `--include-validation`, `extension.validate()` checks the
+complete object against the embedded extension schema, including bounds, formats,
+and conditional constraints, without retrieving the extension schema.
 For Assets, Links, and ItemAssetDefinitions, validation uses the owning STAC
 object and requires an owner. Serialization alone does not validate metadata.
 
-STAC core validation is separate: call the PySTAC object's `validate()` when you
-also need those checks. Its schema resolution and network behavior are controlled
-by PySTAC, not by the generated extension's embedded validator.
+The optional embedded validator checks the extension schema, not STAC core.
+PySTAC's object-level `validate()` also covers core validation; its schema
+resolution and network behavior are separate from the embedded validator.
 
 ## Limitations
 

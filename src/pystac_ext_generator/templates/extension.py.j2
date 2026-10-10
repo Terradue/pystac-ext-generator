@@ -2,7 +2,25 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Generic, Literal, TypeVar, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Literal, TypeVar, cast
+
+from dataclasses import dataclass
+from typing_extensions import Required, TypedDict, Unpack
+from functools import lru_cache
+
+{% if "union" in codec_kinds %}
+from jsonschema.validators import validator_for
+
+{% endif %}
+{% if models or "union" in codec_kinds %}
+if TYPE_CHECKING:
+{% if models %}
+    from collections.abc import Mapping
+{% endif %}
+{% if "union" in codec_kinds %}
+    from jsonschema.protocols import Validator
+{% endif %}
+{% endif %}
 
 import pystac
 from pystac.extensions.base import (
@@ -10,37 +28,75 @@ from pystac.extensions.base import (
 )
 
 SCHEMA_URI = {{ uri|py }}
+{% if include_validation or "union" in codec_kinds %}
 SCHEMA: dict[str, Any] = json.loads({{ document_json|py }})
+{% endif %}
 FIELD_TARGETS = {{ field_targets|py }}
 FIELD_NAMES = {{ field_names|py }}
 TARGETS = {{ targets|py }}
-T = TypeVar("T", pystac.Item, pystac.Collection, pystac.Catalog, pystac.Asset, pystac.ItemAssetDefinition, pystac.Link)
+T = TypeVar("T", bound={{ target_annotation|py }})
 
 
+def _target_for(obj: object) -> str:
+    """Identify supported STAC targets, checking Collection before its Catalog base."""
+    target_types = (
+{% for name, target in [("Collection", "collection"), ("Catalog", "catalog"), ("Item", "item"), ("Asset", "asset"), ("ItemAssetDefinition", "item_asset"), ("Link", "link")] %}
+        (pystac.{{ name }}, {{ target|py }}),
+{% endfor %}
+    )
+    for object_type, target in target_types:
+        if isinstance(obj, object_type):
+            if target not in TARGETS:
+                break
+            return target
+    raise pystac.ExtensionTypeError(f"Unsupported extension target: {type(obj).__name__}")
+
+
+{% if include_validation and ('asset' in targets or 'item_asset' in targets or 'link' in targets) %}
+def _validation_document(obj: object) -> dict[str, Any]:
+    """Serialize a real STAC owner rather than an arbitrary asset container."""
+    if not isinstance(obj, pystac.STACObject):
+        raise pystac.STACError("Full schema validation requires an owner")
+    return obj.to_dict()
+
+
+{% endif %}
 {% include "models.py.j2" %}
 class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog], Generic[T]):
     """Typed property wrapper; use ext() to check/register the extension.
 
     Setters preserve JSON representations, including date/time strings and nested
     dictionaries. None removes a property; set_null() explicitly writes JSON null.
-    Call validate() for full extension-schema validation, including required fields.
+    Validate the owning STAC object to enforce full schema constraints.
     """
 
+{% set has_properties = 'item' in targets or 'item_asset' in targets %}
+{% set has_extra = 'catalog' in targets or 'collection' in targets or 'asset' in targets or 'link' in targets or targets == ['summary'] %}
+{% set has_owned = 'asset' in targets or 'item_asset' in targets or 'link' in targets %}
+{% set has_stac = 'item' in targets or 'collection' in targets or 'catalog' in targets or targets == ['summary'] %}
     def __init__(self, obj: T, target: str) -> None:
-        self.obj = obj
+        """Bind a schema-supported STAC object's metadata for live updates."""
+        self.obj: T = obj
         self._target = target
-        self.additional_read_properties = None
-        if isinstance(obj, pystac.Item):
-            self.properties = obj.properties
-        elif isinstance(obj, pystac.ItemAssetDefinition):
+        self.additional_read_properties: list[dict[str, Any]] | None = None
+{% if has_properties and has_extra %}
+        if isinstance(obj, (pystac.Item, pystac.ItemAssetDefinition)):
             self.properties = obj.properties
         else:
             self.properties = obj.extra_fields
+{% elif has_properties %}
+        self.properties = obj.properties
+{% else %}
+        self.properties = obj.extra_fields
+{% endif %}
+{% if 'asset' in targets %}
         if isinstance(obj, pystac.Asset) and isinstance(obj.owner, pystac.Item):
             self.additional_read_properties = [obj.owner.properties]
+{% endif %}
 
     @classmethod
     def get_schema_uri(cls) -> str:
+        """The canonical schema identifier used for extension registration."""
         return SCHEMA_URI
 
     @classmethod
@@ -50,26 +106,18 @@ class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> {{ class_name }}[T]:
-        if isinstance(obj, pystac.Item):
-            target = "item"
-        elif isinstance(obj, pystac.Collection):
-            target = "collection"
-        elif isinstance(obj, pystac.Catalog):
-            target = "catalog"
-        elif isinstance(obj, pystac.Link):
-            target = "link"
-        elif isinstance(obj, pystac.Asset):
-            target = "asset"
-        elif isinstance(obj, pystac.ItemAssetDefinition):
-            target = "item_asset"
-        else:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
-        if target not in TARGETS:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+        """Wrap a schema-supported object and optionally register its extension."""
+        target = _target_for(obj)
+{% if has_owned and has_stac %}
         if isinstance(obj, (pystac.Asset, pystac.ItemAssetDefinition, pystac.Link)):
             cls.ensure_owner_has_extension(obj, add_if_missing)
         else:
             cls.ensure_has_extension(obj, add_if_missing)
+{% elif has_owned %}
+        cls.ensure_owner_has_extension(obj, add_if_missing)
+{% else %}
+        cls.ensure_has_extension(obj, add_if_missing)
+{% endif %}
         return cls(obj, target)
 
     def _check_field(self, key: str) -> None:
@@ -83,11 +131,12 @@ class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item
         self.properties.pop(key, None)
 
     def set_null(self, name: str) -> None:
-        """Write explicit JSON null; validate() checks whether it is permitted."""
+        """Write explicit JSON null; schema validation checks whether it is permitted."""
         key = FIELD_NAMES[name]
         self._check_field(key)
         self._set_property(key, None, pop_if_none=False)
 
+{% if include_validation %}
     def validate(self) -> None:
         """Validate the whole Item/Collection against this extension's schema.
 
@@ -97,17 +146,24 @@ class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item
         from jsonschema import FormatChecker
         from jsonschema.validators import validator_for
         obj = self.obj
+{% if has_owned and has_stac %}
         if isinstance(obj, (pystac.Asset, pystac.ItemAssetDefinition, pystac.Link)):
-            if obj.owner is None:
-                raise pystac.STACError("Full schema validation requires an owner")
-            obj = obj.owner
-        validator_for(SCHEMA)(SCHEMA, format_checker=FormatChecker()).validate(obj.to_dict())
+            document = _validation_document(obj.owner)
+        else:
+            document = obj.to_dict()
+{% elif has_owned %}
+        document = _validation_document(obj.owner)
+{% else %}
+        document = obj.to_dict()
+{% endif %}
+        validator_for(SCHEMA)(SCHEMA, format_checker=FormatChecker()).validate(document)
 
+{% endif %}
     def apply(self, **values: Any) -> None:
         """Update only supplied fields; omitted fields are preserved.
 
         Keys are generated Python attribute names. Unknown or inapplicable fields
-        are rejected before mutation. Use validate() to check values afterwards.
+        are rejected before mutation. Validate the STAC object to check values afterwards.
         """
         for name in values:
             if name not in FIELD_NAMES:
@@ -121,9 +177,17 @@ class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item
     def {{ f.name }}(self) -> {{ f.annotation|optional }}:
         {{ f.description|py }}
         self._check_field({{ f.key|py }})
+{% if f.annotation == 'Any' %}
         if {{ f.key|py }} in self.properties:
-            return cast({{ f.annotation|optional|py }}, _decode(self.properties[{{ f.key|py }}], {{ f.codec|py }}))
-        return cast({{ f.annotation|optional|py }}, _decode(self._get_property({{ f.key|py }}, object), {{ f.codec|py }}))
+            return {% if f.codec %}_decode(self.properties[{{ f.key|py }}], {{ f.codec|py }}){% else %}self.properties[{{ f.key|py }}]{% endif %}
+
+        return {% if f.codec %}_decode(self._get_property({{ f.key|py }}, object), {{ f.codec|py }}){% else %}self._get_property({{ f.key|py }}, object){% endif %}
+
+{% else %}
+        if {{ f.key|py }} in self.properties:
+            return cast({{ f.annotation|optional|py }}, {% if f.codec %}_decode(self.properties[{{ f.key|py }}], {{ f.codec|py }}){% else %}self.properties[{{ f.key|py }}]{% endif %})
+        return cast({{ f.annotation|optional|py }}, {% if f.codec %}_decode(self._get_property({{ f.key|py }}, object), {{ f.codec|py }}){% else %}self._get_property({{ f.key|py }}, object){% endif %})
+{% endif %}
 
     @{{ f.name }}.setter
     def {{ f.name }}(self, value: {{ f.annotation|optional }}) -> None:
@@ -134,6 +198,7 @@ class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item
 {% if 'summary' in targets %}
     @classmethod
     def summaries(cls, obj: pystac.Collection, add_if_missing: bool = False) -> Summaries{{ class_name }}:
+        """Wrap schema-declared Collection summaries and optionally register the extension."""
         if not isinstance(obj, pystac.Collection):
             raise pystac.ExtensionTypeError("Summaries require a Collection")
         cls.ensure_has_extension(obj, add_if_missing)

@@ -29,7 +29,7 @@ Python keywords and wrapper-method collisions are escaped, such as `class_` and
 
 | JSON Schema shape | Python representation |
 | --- | --- |
-| `string`, including date/time formats | `str`; format validation happens during `validate()`. |
+| `string`, including date/time formats | `str`; format validation happens during schema validation. |
 | `number`, `integer`, `boolean`, `null` | `float`, `int`, `bool`, `None`. |
 | Scalar `enum` or `const` | `Literal[...]` where representable. |
 | Array with homogeneous items | `list[...]`. |
@@ -53,7 +53,7 @@ The whole schema remains authoritative for validation.
 | `apply(**values)` | Update supplied Python field names; precheck unknown/inapplicable names. |
 | `clear(name)` | Remove a field by its Python name. |
 | `set_null(name)` | Store explicit JSON null; schema validation determines whether it is allowed. |
-| `validate()` | Validate the wrapped STAC object, or its owner, against the embedded extension schema. |
+| `validate()` (opt-in) | With `--include-validation`, validate the wrapped object or its owner against the embedded schema. |
 | `summaries(collection, add_if_missing=False)` | Wrap Collection summaries when supported by the schema. |
 
 Items store fields in `properties`; Collections, Catalogs, Assets, and Links use
@@ -74,9 +74,15 @@ Collisions receive numeric suffixes, equivalent shapes may share a class, and
 recursive records use forward annotations. See [mutation semantics](../how-to/use-extension.md#edit-nested-values)
 for live views versus copied assignments.
 
+Large nested classes use schema-generated `TypedDict` keyword declarations with
+`Unpack` for `create()` and `apply()`. These preserve named argument typing and
+required members without oversized function signatures. Runtime checks still reject
+unknown keywords and missing required values before mutation.
+
 ## Module metadata
 
-- `SCHEMA`: the original or bundled schema used for validation.
+- `SCHEMA` (conditional): the original or bundled schema, emitted for optional
+  offline validation or schema-dependent union decoding.
 - `SCHEMA_URI`: canonical registration identifier.
 - `FIELD_NAMES`: Python attribute names mapped to JSON keys.
 - `FIELD_TARGETS`: JSON keys mapped to their discovered targets.

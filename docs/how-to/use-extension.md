@@ -17,7 +17,8 @@ limitations under the License.
 # Use generated extension classes
 
 The first examples continue from the `item` and `extension` created in the
-[tutorial](../tutorials/first-steps.md).
+[tutorial](../tutorials/first-steps.md), which enables `--include-validation`.
+For default lean output, use the owning STAC object's `validate()` through PySTAC.
 
 ## Update or remove fields
 

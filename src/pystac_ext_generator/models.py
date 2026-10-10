@@ -79,6 +79,12 @@ class ModelBuilder:
         self.shapes: dict[str, Model] = {}
         self.names = reserved | {
             "Any",
+            "ClassVar",
+            "Mapping",
+            "Required",
+            "TypedDict",
+            "Unpack",
+            "Validator",
             "Literal",
             "Generic",
             "TypeVar",

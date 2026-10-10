@@ -74,8 +74,12 @@ Use a published canonical schema URL for an extension you distribute.
 ## 2. Generate the Python module
 
 ```bash
-pystac-ext-generator quality-schema.json -o quality_extension.py
+pystac-ext-generator quality-schema.json --include-validation -o quality_extension.py
 ```
+
+This tutorial opts into embedded validation so its illustrative schema can be
+validated offline. Without `--include-validation`, use PySTAC
+`item.validate()` and a published or locally configured schema resolver.
 
 The title produces `QualityExtension`, and the referenced object definition
 produces `QualityDetails`. The references under Item `properties` and `assets`

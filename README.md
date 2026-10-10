@@ -33,14 +33,30 @@ item = pystac.Item(
 ext = ViewGeometryExtension.ext(item, add_if_missing=True)
 ext.off_nadir = 15.0
 ext.apply(sun_azimuth=180.0, sun_elevation=42.0)
-ext.validate()  # Full extension schema; raises jsonschema.ValidationError.
+item.validate()  # PySTAC validates the Item and its registered extensions.
 assert item.properties["view:off_nadir"] == 15.0
 ```
 
-The generated module requires `pystac>=1.12,<2`. Schema validation and decoding
-object unions additionally require `jsonschema>=4.23,<5`. It does not import this generator,
-Click, or Jinja2. The original (or bundled) schema is embedded for offline validation.
-Use `item.validate()` separately if STAC core validation is also required.
+Generated modules are lean by default: Themes, for example, requires only
+`pystac>=1.12,<2`, with no embedded schema or JSON Schema validator. Use PySTAC's
+`item.validate()` for the registered schema; its normal resolver may fetch schemas.
+To retain standalone offline extension validation, generate with:
+
+```bash
+pystac-ext-generator schema.json --include-validation -o extension.py
+```
+
+This adds the original (or bundled) `SCHEMA` and `extension.validate()` and requires
+`jsonschema>=4.23,<5`. Nested unions also require jsonschema and the embedded schema
+when choosing the correct wrapper depends on schema validation, even without this
+flag. Wide nested factories use schema-generated typed keyword dictionaries and
+require `typing-extensions>=4.12,<5` on Python 3.10+. Generated modules do not import
+the generator, Click, Jinja2, or Ruff.
+
+Ruff formats emitted source and normalizes its imports during generation. The
+generator depends on Ruff; generated applications do not. Regression tests run
+Ruff format/check, strict mypy, and Bandit on real and synthetic generated modules
+using this repository's settings, without generated-code suppressions.
 
 ## Generated API
 
@@ -75,6 +91,7 @@ pystac-ext-generator SCHEMA [OPTIONS]
   --prefix PREFIX        Select namespace, without the colon
   --reference URI=FILE   Repeat for offline external schema mappings
   --resolve-external    Fetch and bundle external HTTP(S) schemas
+  --include-validation  Embed an offline extension validator and its schema
   --strict              Fail on generation warnings
   --force               Allow overwriting an existing output file
   --version
@@ -162,7 +179,7 @@ render = ext.renders["overview"]       # Render, not dict
 render.title = "Updated preview"      # Updates the backing Item properties
 render.apply(colormap_name="viridis") # Typed partial update
 raw = render.to_dict()                # Plain JSON dictionary
-ext.validate()
+item.validate()
 ```
 
 Generation produces real Python classes with:
@@ -195,7 +212,8 @@ Item's backing JSON. Assign an asset-local value first if an independent overrid
 
 `create()` omits unspecified optionals and preserves explicit `None` as JSON null.
 Setters and `apply()` treat `None` as removal; use `set_null(name)` for explicit null.
-Call the parent extension's `validate()` to enforce the full schema. Factories enforce
+Validate the owning STAC object through PySTAC, or call the extension's `validate()`
+when generated with `--include-validation`. Factories enforce
 argument presence, not all type/value constraints. Raw JSON dictionaries are accepted
 at runtime for interoperability; getters return generated classes where modeled.
 
@@ -215,6 +233,7 @@ from pystac_ext_generator.bundle import bundle
 schema = json.loads(Path("schema.json").read_text())
 # Optional: schema = bundle(schema, documents={canonical_uri: external_schema})
 source, warnings = generate(schema, prefix="my")
+# For offline extension validation: generate(schema, include_validation=True)
 Path("my_extension.py").write_text(source)
 ```
 
@@ -239,20 +258,23 @@ handwritten semantic helper in PySTAC**.
   intersections can also use `Any`; schema validation retains all constraints.
 - Applicability through conditional schemas is approximated and produces a warning.
   Accessor availability does not imply that all branch combinations are valid;
-  call `validate()` after populating the object.
+  validate the owning STAC object after populating it.
 - Runtime setter validation, migrations, custom semantic methods, and automatic
   global extension hooks are not generated. Nested factories do require unconditional
   required fields; constructors wrapping existing dictionaries permit incomplete data.
+- Large nested `create()` and `apply()` APIs use generated `TypedDict`/`Unpack`
+  keyword schemas to preserve typing without oversized signatures.
 - Dynamic property names do not get named accessors. Homogeneous maps can wrap
   their values; heterogeneous `patternProperties` maps remain raw and produce a warning.
   Tuple arrays retain raw members with a warning. Band-level STAC attachment helpers
   are not generated, though declared nested band record fields can become value classes.
 - Nested `$id` scopes, named-anchor references, `$dynamicRef`, `$recursiveRef`, and
   mixed-dialect bundles are rejected. Normalize these before generation.
-- The input must be the full extension schema; `validate()` validates that document.
+- The input must be the full extension schema. The optional embedded validator
+  validates that complete document.
   Standalone field-definition fragments do not establish STAC applicability.
-- Selecting a namespace generates its accessors but retains the entire validation
-  schema, including any cross-extension dependencies.
+- Selecting a namespace generates its accessors; when embedding a schema for
+  validation or union decoding, the full schema and cross-extension constraints are retained.
 
 ## Tests and build
 

@@ -354,7 +354,7 @@ class _FieldDiscovery:
         for key in ("if", "then", "else"):
             if key in node:
                 self.schema.warnings.add(
-                    "Conditional applicability is approximated; call validate() to enforce the complete schema."
+                    "Conditional applicability is approximated; validate the STAC object to enforce the complete schema."
                 )
                 self.walk(node[key], target, location, seen)
 

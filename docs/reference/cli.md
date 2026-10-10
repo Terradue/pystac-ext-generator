@@ -28,6 +28,7 @@ pystac-ext-generator [OPTIONS] SCHEMA
 | `--prefix PREFIX` | Select a field namespace without its colon when multiple namespaces occur. |
 | `--reference URI=FILE` | Supply an offline external schema mapping; repeat as needed. |
 | `--resolve-external` | Fetch missing external HTTP(S) schema resources. |
+| `--include-validation` | Embed the complete schema and an offline extension `validate()` method. |
 | `--strict` | Treat generation warnings as errors. |
 | `--force` | Permit overwriting the output file. |
 | `--version` | Print the version from the package's shared version source. |
@@ -52,6 +53,17 @@ The removed options `--class-name`, `--schema-uri`, `--fields-pointer`, and
 `--target` are not accepted. Their former Python API counterparts are also
 removed. Put that information in the full extension schema and update generated
 class imports when migrating from namespace-derived naming.
+
+## Generated-code quality
+
+Ruff normalizes imports and formats generated source. The generator emits only
+needed conversions and schema-derived types. Its regression suite applies this
+repository's Ruff, strict mypy, and Bandit settings to generated files themselves.
+No generated-file lint, typing, or security suppressions are needed for the covered schemas.
+
+Default output omits full validation. Schema-dependent nested union decoding may
+still embed the schema and require jsonschema. Use `--include-validation` to opt
+into a public offline validator.
 
 ## Output and errors
 

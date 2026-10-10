@@ -48,6 +48,9 @@ from .schema import SchemaError
 @click.option(
     "--resolve-external", is_flag=True, help="Fetch and bundle external HTTP(S) references."
 )
+@click.option(
+    "--include-validation", is_flag=True, help="Embed the schema and an offline validate() method."
+)
 @click.option("--force", is_flag=True, help="Overwrite an existing output module.")
 @click.option("--strict", is_flag=True, help="Treat generation warnings as errors.")
 @click.version_option(__version__)
@@ -58,6 +61,7 @@ def main(
     prefix: str | None,
     references: tuple[str, ...],
     resolve_external: bool,
+    include_validation: bool,
     force: bool,
     strict: bool,
 ) -> None:
@@ -73,6 +77,7 @@ def main(
         source, warnings = generate(
             document,
             prefix=prefix,
+            include_validation=include_validation,
         )
         if strict and warnings:
             raise SchemaError("; ".join(warnings))
