@@ -275,10 +275,12 @@ def test_real_schemas_deterministic_and_importable(name: str) -> None:
     assert module(doc).FIELD_NAMES
 
 
-@pytest.mark.parametrize("name", ["projection", "storage"])
-def test_external_refs_fail_explicitly_without_bundle(name: str) -> None:
-    with pytest.raises(SchemaError, match="External reference"):
-        generate(schema(name))
+def test_external_resolution_errors_are_reported() -> None:
+    with (
+        patch("pystac_ext_generator.generator.fetch_http", side_effect=OSError("unavailable")),
+        pytest.raises(SchemaError, match=r"Could not resolve schema references.*unavailable"),
+    ):
+        generate(schema("storage"))
 
 
 def test_bundle_external_refs_and_offline_validation() -> None:

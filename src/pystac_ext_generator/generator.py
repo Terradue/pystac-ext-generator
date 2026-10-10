@@ -29,11 +29,12 @@ from jinja2 import Environment, PackageLoader, StrictUndefined
 from jsonschema.exceptions import SchemaError as JSONSchemaError
 from jsonschema.validators import validator_for
 
+from .bundle import bundle, fetch_http, json_graph
 from .models import ModelBuilder, pascal
 from .schema import Schema, SchemaError
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
     from .schema import Field
 
@@ -43,6 +44,7 @@ def generate(
     *,
     prefix: str | None = None,
     include_validation: bool = False,
+    documents: Mapping[str, dict[str, Any]] | None = None,
 ) -> tuple[str, list[str]]:
     """Return Python source and diagnostics. No generated code is executed.
 
@@ -53,15 +55,16 @@ def generate(
     Args:
         document: Full extension schema with a nonempty title and HTTP(S) $id.
         prefix: Optional namespace filter, without the colon.
+        documents: Offline resources; missing external schemas are fetched over HTTP(S).
         include_validation: Embed the schema and a validate() method. Union
             decoding may require the schema even when this is false.
 
     Raises:
         SchemaError: If the schema, namespace, class name, or references cannot be supported.
     """
-    _validate_document(document)
+    document = bundle(document, documents=documents, fetch=fetch_http)
+    _validate_document(json_graph(document))
     schema = Schema(document)
-    schema.check_refs(document)
     fields = schema.discover(prefix)
     class_name = _class_name(document, fields, prefix)
     builder = _build_models(schema, fields, class_name)
@@ -95,7 +98,7 @@ def generate(
         ),
         target_types=_target_types(fields),
         target_annotation=" | ".join("pystac." + name for name, _ in _target_types(fields)),
-        document_json=json.dumps(document, ensure_ascii=True, allow_nan=False),
+        document_json=json.dumps(json_graph(document), ensure_ascii=True, allow_nan=False),
         targets=sorted(set().union(*(f.targets for f in fields))),
         field_targets={f.key: sorted(f.targets) for f in fields},
         field_names={f.name: f.key for f in fields},

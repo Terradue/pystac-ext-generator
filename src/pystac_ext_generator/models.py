@@ -21,6 +21,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from .bundle import json_graph
 from .schema import Schema, identifier
 
 
@@ -72,6 +73,12 @@ class ModelBuilder:
 
     def __init__(self, schema: Schema, reserved: set[str]) -> None:
         self.schema = schema
+        self.hints = {
+            id(node): name
+            for keyword in ("$defs", "definitions")
+            for name, node in schema.document.get(keyword, {}).items()
+            if name not in {"fields", "items", "object", "value"}
+        }
         self.models: list[Model] = []
         self.objects: dict[int, Model] = {}
         self.nodes: list[dict[str, Any]] = []
@@ -102,19 +109,17 @@ class ModelBuilder:
     def object_shape(
         self, node: Any, seen: frozenset[int] = frozenset()
     ) -> tuple[dict[str, Any], set[str]]:
-        """Merge object properties and requirements from local references and intersections."""
+        """Merge object properties and requirements from resolved intersections."""
         if not isinstance(node, dict) or id(node) in seen:
             return {}, set()
         seen = seen | {id(node)}
         props, required = dict(node.get("properties", {})), set(node.get("required", []))
         parts = list(node.get("allOf", []))
-        if "$ref" in node:
-            parts.insert(0, self.schema.pointer(node["$ref"]))
         for part in parts:
             more, req = self.object_shape(part, seen)
             required |= req
             for key, value in more.items():
-                if key in props and props[key] != value:
+                if key in props and props[key] is not value:
                     props[key] = {"allOf": [props[key], value]}
                 else:
                     props[key] = value
@@ -142,16 +147,7 @@ class ModelBuilder:
             self.active.remove(id(node))
 
     def _build(self, node: dict[str, Any], hint: str) -> ValueType:
-        if "$ref" in node and len(set(node) - {"$ref", "description", "title", "$comment"}) == 0:
-            ref = node["$ref"]
-            tail = ref.rsplit("/", 1)[-1].replace("~1", "/").replace("~0", "~")
-            # Generic definition names should not produce classes named Fields.
-            named_hint = (
-                hint
-                if tail in {"fields", "items", "object", "value"} or tail.startswith("resource_")
-                else tail
-            )
-            return self.build(self.schema.pointer(ref), named_hint)
+        hint = self.hints.get(id(node), hint)
         for keyword in ("oneOf", "anyOf"):
             if keyword in node:
                 return self._union(node[keyword], hint)
@@ -168,14 +164,20 @@ class ModelBuilder:
             return ValueType(annotation)
         return ValueType(
             annotation,
-            ["union", [[part, value.codec] for part, value in zip(branches, types, strict=True)]],
+            [
+                "union",
+                [
+                    [json.dumps(json_graph(part)), value.codec]
+                    for part, value in zip(branches, types, strict=True)
+                ],
+            ],
         )
 
     def _build_type(self, node: dict[str, Any], hint: str) -> ValueType:
         schema_type = node.get("type")
         if isinstance(schema_type, list) and set(schema_type) == {"object", "null"}:
             narrowed = {**node, "type": "object"}
-            # Keep the original identity so recursive $refs find this record class.
+            # Keep the original identity so recursive graph edges reuse this class.
             value = (
                 self._build(narrowed, hint)
                 if not self.object_shape(node)[0]
@@ -230,7 +232,7 @@ class ModelBuilder:
     def record(self, node: dict[str, Any], hint: str) -> ValueType:
         """Reuse an equivalent object shape or reserve and populate a new class."""
         props, required = self.object_shape(node)
-        fingerprint = json.dumps([props, sorted(required)], sort_keys=True)
+        fingerprint = json.dumps(json_graph([props, sorted(required)]), sort_keys=True)
         if fingerprint in self.shapes:
             model = self.shapes[fingerprint]
             self.objects[id(node)] = model

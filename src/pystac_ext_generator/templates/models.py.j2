@@ -61,18 +61,17 @@ def _decode_map(value: Any, codec: Any) -> dict[str, Any]:
 {% endif %}
 
 {% if 'union' in codec_kinds %}
-@lru_cache(maxsize=1)
-def _union_validator() -> Validator:
-    """Resolve union branches against the embedded schema and its local references."""
-    return validator_for(SCHEMA)(SCHEMA)
+@lru_cache(maxsize=128)
+def _union_validator(branch_json: str) -> Validator:
+    """Validate a resolved branch with its own root for recursive references."""
+    return validator_for(SCHEMA)(json.loads(branch_json))
 
 
 def _decode_union(value: Any, branches: list[Any]) -> Any:
     """Decode only when matching union branches agree on one representation."""
-    validator = _union_validator()
     matches = []
-    for branch_schema, branch_codec in branches:
-        if validator.evolve(schema=branch_schema).is_valid(value) and branch_codec not in matches:
+    for branch_json, branch_codec in branches:
+        if _union_validator(branch_json).is_valid(value) and branch_codec not in matches:
             matches.append(branch_codec)
     if len(matches) != 1:
         raise ValueError("Nested union has no unique representation; validate the JSON or access raw properties")

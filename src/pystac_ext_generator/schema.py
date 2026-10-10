@@ -23,7 +23,6 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-from urllib.parse import unquote
 
 
 class SchemaError(ValueError):
@@ -54,40 +53,20 @@ class Field:
 
 
 class Schema:
-    """Resolve references and discover renderable fields in a schema."""
+    """Discover renderable fields in an already dereferenced schema graph."""
 
     def __init__(self, document: dict[str, Any]) -> None:
         self.document = document
         self.warnings: set[str] = set()
 
-    def pointer(self, ref: str) -> Any:
-        """Resolve a local JSON Pointer, raising SchemaError for unsupported references."""
-        if not ref.startswith("#"):
-            raise SchemaError(
-                f"External reference {ref!r}: bundle the schema first (internal #/... references are supported)."
-            )
-        pointer = unquote(ref[1:])
-        if pointer and not pointer.startswith("/"):
-            raise SchemaError(f"Named anchors are not supported: {ref}")
-        node: Any = self.document
-        try:
-            for encoded_token in pointer.split("/")[1:]:
-                token = encoded_token.replace("~1", "/").replace("~0", "~")
-                node = node[int(token)] if isinstance(node, list) else node[token]
-        except (KeyError, IndexError, ValueError, TypeError) as exc:
-            raise SchemaError(f"Unresolved JSON Pointer: {ref}") from exc
-        return node
-
-    def annotation(self, node: Any, seen: frozenset[str] = frozenset()) -> str:
+    def annotation(self, node: Any, seen: frozenset[int] = frozenset()) -> str:
         """Return a conservative Python annotation, recording unsupported intersections."""
         if not isinstance(node, dict):
             return "Any"
-        if "$ref" in node:
-            ref = node["$ref"]
-            if ref in seen:
-                self.warnings.add("Recursive value schemas use Any at the recursion boundary.")
-                return "Any"
-            return self.annotation(self.pointer(ref), seen | {ref})
+        if id(node) in seen:
+            self.warnings.add("Recursive value schemas use Any at the recursion boundary.")
+            return "Any"
+        seen = seen | {id(node)}
         values = node.get("enum", [node["const"]] if "const" in node else None)
         if values is not None and all(
             isinstance(value, (str, int, bool)) or value is None for value in values
@@ -97,7 +76,7 @@ class Schema:
             )
         return self._composed_annotation(node, seen)
 
-    def _composed_annotation(self, node: dict[str, Any], seen: frozenset[str]) -> str:
+    def _composed_annotation(self, node: dict[str, Any], seen: frozenset[int]) -> str:
         for union in ("oneOf", "anyOf"):
             if union in node:
                 annotations = list(
@@ -114,7 +93,7 @@ class Schema:
             return "Any"
         return self._type_annotation(node, seen)
 
-    def _type_annotation(self, node: dict[str, Any], seen: frozenset[str]) -> str:
+    def _type_annotation(self, node: dict[str, Any], seen: frozenset[int]) -> str:
         schema_type = node.get("type")
         if isinstance(schema_type, list):
             return " | ".join(
@@ -141,33 +120,11 @@ class Schema:
         }
         return primitives.get(schema_type, "Any") if isinstance(schema_type, str) else "Any"
 
-    def _array_annotation(self, items: Any, seen: frozenset[str]) -> str:
+    def _array_annotation(self, items: Any, seen: frozenset[int]) -> str:
         if isinstance(items, list):
             annotations = list(dict.fromkeys(self.annotation(part, seen) for part in items))
             return "list[" + " | ".join(annotations or ["Any"]) + "]"
         return f"list[{self.annotation(items, seen)}]"
-
-    def check_refs(self, node: Any, seen: frozenset[str] = frozenset()) -> None:
-        """Reject unresolved references and unsupported resource scopes.
-
-        Raises:
-            SchemaError: If a reference or nested resource scope is unsupported.
-        """
-        if not isinstance(node, dict):
-            return
-        if "$id" in node and node is not self.document:
-            raise SchemaError(
-                "Nested $id scopes are not supported; normalize/bundle the schema first."
-            )
-        for unsupported in ("$dynamicRef", "$recursiveRef"):
-            if unsupported in node:
-                raise SchemaError(
-                    f"{unsupported} is not supported; use ordinary local $ref pointers."
-                )
-        if "$ref" in node and node["$ref"] not in seen:
-            self.check_refs(self.pointer(node["$ref"]), seen | {node["$ref"]})
-        for child in schema_children(node):
-            self.check_refs(child, seen)
 
     def discover(self, prefix: str | None = None) -> list[Field]:
         """Discover extension fields at supported STAC locations.
@@ -216,7 +173,7 @@ def schema_children(node: dict[str, Any]) -> Iterator[Any]:
 
 
 class _FieldDiscovery:
-    """Accumulate fields while preserving STAC location and reference traversal state."""
+    """Accumulate fields while preserving STAC location and graph traversal state."""
 
     def __init__(self, schema: Schema, prefix: str | None) -> None:
         self.schema = schema
@@ -262,12 +219,13 @@ class _FieldDiscovery:
             return
         if target != "summary" and entry.targets == {"summary"}:
             entry.schemas.clear()
-        if node not in entry.schemas:
+        if not any(node is existing for existing in entry.schemas):
             entry.schemas.append(node)
 
-    def _declared_types(self, node: Any, seen: frozenset[str] = frozenset()) -> set[str]:
-        if not isinstance(node, dict):
+    def _declared_types(self, node: Any, seen: frozenset[int] = frozenset()) -> set[str]:
+        if not isinstance(node, dict) or id(node) in seen:
             return set()
+        seen = seen | {id(node)}
         type_schema = node.get("properties", {}).get("type", {})
         values = (
             type_schema.get("enum", [type_schema.get("const")])
@@ -275,8 +233,6 @@ class _FieldDiscovery:
             else []
         )
         types = {value for value in values if value in ("Feature", "Collection", "Catalog")}
-        if "$ref" in node and node["$ref"] not in seen:
-            types |= self._declared_types(self.schema.pointer(node["$ref"]), seen | {node["$ref"]})
         for child in node.get("allOf", []):
             types |= self._declared_types(child, seen)
         return types
@@ -286,7 +242,7 @@ class _FieldDiscovery:
         node: Any,
         target: str,
         location: str = "root",
-        seen: frozenset[tuple[str, str]] = frozenset(),
+        seen: frozenset[tuple[int, str]] = frozenset(),
     ) -> None:
         """Visit applicable schema branches, stopping cycles at each STAC location."""
         if not isinstance(node, dict):
@@ -299,16 +255,16 @@ class _FieldDiscovery:
                 not in declared
             ):
                 return
-        if "$ref" in node:
-            token = (node["$ref"], location)
-            if token not in seen:
-                self.walk(self.schema.pointer(node["$ref"]), target, location, seen | {token})
+        token = (id(node), location)
+        if token in seen:
+            return
+        seen = seen | {token}
         self._walk_properties(node, target, location, seen)
         self._walk_branches(node, target, location, seen)
         self._walk_containers(node, target, location, seen)
 
     def _walk_properties(
-        self, node: dict[str, Any], target: str, location: str, seen: frozenset[tuple[str, str]]
+        self, node: dict[str, Any], target: str, location: str, seen: frozenset[tuple[int, str]]
     ) -> None:
         if location == "summary":
             for key in node.get("required", []):
@@ -329,7 +285,7 @@ class _FieldDiscovery:
                 self.walk(value, target, "asset" if location == "asset_map" else "item_asset", seen)
 
     def _walk_root_property(
-        self, key: str, value: Any, target: str, seen: frozenset[tuple[str, str]]
+        self, key: str, value: Any, target: str, seen: frozenset[tuple[int, str]]
     ) -> None:
         destinations = {
             "assets": "asset_map",
@@ -346,7 +302,7 @@ class _FieldDiscovery:
             self._add(key, value, target)
 
     def _walk_branches(
-        self, node: dict[str, Any], target: str, location: str, seen: frozenset[tuple[str, str]]
+        self, node: dict[str, Any], target: str, location: str, seen: frozenset[tuple[int, str]]
     ) -> None:
         for key in ("allOf", "anyOf", "oneOf"):
             for child in node.get(key, []):
@@ -359,7 +315,7 @@ class _FieldDiscovery:
                 self.walk(node[key], target, location, seen)
 
     def _walk_containers(
-        self, node: dict[str, Any], target: str, location: str, seen: frozenset[tuple[str, str]]
+        self, node: dict[str, Any], target: str, location: str, seen: frozenset[tuple[int, str]]
     ) -> None:
         if location == "link_list":
             self.walk(node.get("items"), target, "link", seen)

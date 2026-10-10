@@ -25,7 +25,7 @@ from urllib.error import URLError
 import click
 
 from .__about__ import __version__
-from .bundle import bundle, fetch_http
+from .bundle import fetch_http
 from .generator import generate
 from .schema import SchemaError
 
@@ -46,7 +46,9 @@ from .schema import SchemaError
     help="Offline external schema mapping URI=FILE; repeat as needed.",
 )
 @click.option(
-    "--resolve-external", is_flag=True, help="Fetch and bundle external HTTP(S) references."
+    "--resolve-external",
+    is_flag=True,
+    help="External HTTP(S) references are resolved automatically.",
 )
 @click.option(
     "--include-validation", is_flag=True, help="Embed the schema and an offline validate() method."
@@ -66,18 +68,14 @@ def main(
     strict: bool,
 ) -> None:
     """Generate a PySTAC extension from a JSON SCHEMA file, HTTP(S) URL, or - (stdin)."""
+    del resolve_external  # Retained for CLI compatibility; resolution is always eager.
     try:
         document = _read_schema(schema)
-        if references or resolve_external:
-            document = bundle(
-                document,
-                documents=_read_references(references),
-                fetch=fetch_http if resolve_external else None,
-            )
         source, warnings = generate(
             document,
             prefix=prefix,
             include_validation=include_validation,
+            documents=_read_references(references),
         )
         if strict and warnings:
             raise SchemaError("; ".join(warnings))
