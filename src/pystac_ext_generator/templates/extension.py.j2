@@ -1,0 +1,159 @@
+"""Generated PySTAC extension. Edit the source schema and regenerate to update."""
+from __future__ import annotations
+
+import json
+from typing import Any, Generic, Literal, TypeVar, cast
+
+import pystac
+from pystac.extensions.base import (
+    ExtensionManagementMixin, PropertiesExtension, SummariesExtension,
+)
+
+SCHEMA_URI = {{ uri|py }}
+SCHEMA: dict[str, Any] = json.loads({{ document_json|py }})
+FIELD_TARGETS = {{ field_targets|py }}
+FIELD_NAMES = {{ field_names|py }}
+TARGETS = {{ targets|py }}
+T = TypeVar("T", pystac.Item, pystac.Collection, pystac.Catalog, pystac.Asset, pystac.ItemAssetDefinition, pystac.Link)
+
+
+{% include "models.py.j2" %}
+class {{ class_name }}(PropertiesExtension, ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog], Generic[T]):
+    """Typed property wrapper; use ext() to check/register the extension.
+
+    Setters preserve JSON representations, including date/time strings and nested
+    dictionaries. None removes a property; set_null() explicitly writes JSON null.
+    Call validate() for full extension-schema validation, including required fields.
+    """
+
+    def __init__(self, obj: T, target: str) -> None:
+        self.obj = obj
+        self._target = target
+        self.additional_read_properties = None
+        if isinstance(obj, pystac.Item):
+            self.properties = obj.properties
+        elif isinstance(obj, pystac.ItemAssetDefinition):
+            self.properties = obj.properties
+        else:
+            self.properties = obj.extra_fields
+        if isinstance(obj, pystac.Asset) and isinstance(obj.owner, pystac.Item):
+            self.additional_read_properties = [obj.owner.properties]
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
+
+    @classmethod
+    def has_extension(cls, obj: pystac.STACObject) -> bool:
+        """Check this exact schema version; migrations are not generated."""
+        return SCHEMA_URI in (obj.stac_extensions or [])
+
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> {{ class_name }}[T]:
+        if isinstance(obj, pystac.Item):
+            target = "item"
+        elif isinstance(obj, pystac.Collection):
+            target = "collection"
+        elif isinstance(obj, pystac.Catalog):
+            target = "catalog"
+        elif isinstance(obj, pystac.Link):
+            target = "link"
+        elif isinstance(obj, pystac.Asset):
+            target = "asset"
+        elif isinstance(obj, pystac.ItemAssetDefinition):
+            target = "item_asset"
+        else:
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+        if target not in TARGETS:
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+        if isinstance(obj, (pystac.Asset, pystac.ItemAssetDefinition, pystac.Link)):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+        else:
+            cls.ensure_has_extension(obj, add_if_missing)
+        return cls(obj, target)
+
+    def _check_field(self, key: str) -> None:
+        if self._target not in FIELD_TARGETS[key]:
+            raise pystac.ExtensionTypeError(f"{key} does not apply to {self._target}")
+
+    def clear(self, name: str) -> None:
+        """Remove a field using its generated Python attribute name."""
+        key = FIELD_NAMES[name]
+        self._check_field(key)
+        self.properties.pop(key, None)
+
+    def set_null(self, name: str) -> None:
+        """Write explicit JSON null; validate() checks whether it is permitted."""
+        key = FIELD_NAMES[name]
+        self._check_field(key)
+        self._set_property(key, None, pop_if_none=False)
+
+    def validate(self) -> None:
+        """Validate the whole Item/Collection against this extension's schema.
+
+        Assets are validated through their owner; unowned assets cannot be checked.
+        STAC core validation remains available separately through obj.validate().
+        """
+        from jsonschema import FormatChecker
+        from jsonschema.validators import validator_for
+        obj = self.obj
+        if isinstance(obj, (pystac.Asset, pystac.ItemAssetDefinition, pystac.Link)):
+            if obj.owner is None:
+                raise pystac.STACError("Full schema validation requires an owner")
+            obj = obj.owner
+        validator_for(SCHEMA)(SCHEMA, format_checker=FormatChecker()).validate(obj.to_dict())
+
+    def apply(self, **values: Any) -> None:
+        """Update only supplied fields; omitted fields are preserved.
+
+        Keys are generated Python attribute names. Unknown or inapplicable fields
+        are rejected before mutation. Use validate() to check values afterwards.
+        """
+        for name in values:
+            if name not in FIELD_NAMES:
+                raise TypeError(f"Unknown extension field: {name}")
+            self._check_field(FIELD_NAMES[name])
+        for name, value in values.items():
+            setattr(self, name, value)
+
+{% for f in fields %}
+    @property
+    def {{ f.name }}(self) -> {{ f.annotation|optional }}:
+        {{ f.description|py }}
+        self._check_field({{ f.key|py }})
+        if {{ f.key|py }} in self.properties:
+            return cast({{ f.annotation|optional|py }}, _decode(self.properties[{{ f.key|py }}], {{ f.codec|py }}))
+        return cast({{ f.annotation|optional|py }}, _decode(self._get_property({{ f.key|py }}, object), {{ f.codec|py }}))
+
+    @{{ f.name }}.setter
+    def {{ f.name }}(self, value: {{ f.annotation|optional }}) -> None:
+        self._check_field({{ f.key|py }})
+        self._set_property({{ f.key|py }}, _encode(value))
+
+{% endfor %}
+{% if 'summary' in targets %}
+    @classmethod
+    def summaries(cls, obj: pystac.Collection, add_if_missing: bool = False) -> Summaries{{ class_name }}:
+        if not isinstance(obj, pystac.Collection):
+            raise pystac.ExtensionTypeError("Summaries require a Collection")
+        cls.ensure_has_extension(obj, add_if_missing)
+        return Summaries{{ class_name }}(obj)
+
+
+class Summaries{{ class_name }}(SummariesExtension):
+    """Collection summaries; ranges, lists and JSON Schema objects are preserved."""
+{% for f in fields if 'summary' in f.targets %}
+    @property
+    def {{ f.name }}(self) -> list[Any] | pystac.RangeSummary[Any] | dict[str, Any] | None:
+        value = self.summaries.to_dict().get({{ f.key|py }})
+        if isinstance(value, dict) and "minimum" in value and "maximum" in value:
+            return self.summaries.get_range({{ f.key|py }})
+        return value
+
+    @{{ f.name }}.setter
+    def {{ f.name }}(self, value: list[Any] | pystac.RangeSummary[Any] | dict[str, Any] | None) -> None:
+        self.summaries.remove({{ f.key|py }})
+        self._set_summary({{ f.key|py }}, value)
+
+{% endfor %}
+{% endif %}

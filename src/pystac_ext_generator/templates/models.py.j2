@@ -1,0 +1,167 @@
+class _Unset:
+    pass
+
+
+_UNSET = _Unset()
+_VALIDATOR = None
+
+
+def _encode(value: Any) -> Any:
+    """Convert generated objects at any depth into plain JSON containers."""
+    if isinstance(value, _Object):
+        value = value.properties
+    if isinstance(value, dict):
+        return {key: _encode(child) for key, child in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_encode(child) for child in value]
+    return value
+
+
+def _decode(value: Any, codec: Any) -> Any:
+    if value is None or codec is None:
+        return value
+    kind, detail = codec
+    if kind == "object":
+        return _MODELS[detail].from_dict(value)
+    if kind == "list":
+        if not isinstance(value, list):
+            raise TypeError("Expected a JSON array")
+        return [_decode(child, detail) for child in value]
+    if kind == "map":
+        if not isinstance(value, dict):
+            raise TypeError("Expected a JSON object map")
+        return {key: _decode(child, detail) for key, child in value.items()}
+    if kind == "union":
+        global _VALIDATOR
+        if _VALIDATOR is None:
+            from jsonschema.validators import validator_for
+            _VALIDATOR = validator_for(SCHEMA)(SCHEMA)
+        matches = []
+        for branch_schema, branch_codec in detail:
+            if _VALIDATOR.evolve(schema=branch_schema).is_valid(value) and branch_codec not in matches:
+                matches.append(branch_codec)
+        if len(matches) != 1:
+            raise ValueError("Nested union has no unique representation; validate the JSON or access raw properties")
+        return _decode(value, matches[0])
+    raise ValueError(f"Unknown conversion: {kind}")
+
+
+_O = TypeVar("_O", bound="_Object")
+
+
+class _Object:
+    """Live wrapper around JSON, following PySTAC value-object conventions."""
+    _members: dict[str, str] = {}
+
+    def __init__(self, properties: dict[str, Any]) -> None:
+        if not isinstance(properties, dict):
+            raise TypeError(f"{type(self).__name__} requires a dictionary")
+        self.properties = properties
+
+    @classmethod
+    def from_dict(cls: type[_O], properties: dict[str, Any], *, copy: bool = False) -> _O:
+        """Wrap by reference, or request an independent copy."""
+        from copy import deepcopy
+        return cls(deepcopy(properties) if copy else properties)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the live backing JSON dictionary, as PySTAC Render does."""
+        return self.properties
+
+    def apply(self, **values: Any) -> None:
+        """Update supplied Python member names; None removes a member."""
+        unknown = values.keys() - self._members.keys()
+        if unknown:
+            raise TypeError(f"Unknown fields: {sorted(unknown)}")
+        for name, value in values.items():
+            setattr(self, name, value)
+
+    def clear(self, name: str) -> None:
+        self.properties.pop(self._members[name], None)
+
+    def set_null(self, name: str) -> None:
+        self.properties[self._members[name]] = None
+
+    def __eq__(self, other: object) -> bool:
+        if type(other) is not type(self):
+            return NotImplemented
+        return self.properties == other.properties
+
+    def __repr__(self) -> str:
+        return f"<{type(self).__name__} {self.properties!r}>"
+
+
+{% for model in models %}
+class {{ model.name }}(_Object):
+    """Generated nested value object; unknown JSON members are preserved."""
+    _members = {
+{% for member in model.members %}
+        {{ member.name|py }}: {{ member.key|py }},
+{% endfor %}
+    }
+
+    @classmethod
+    def create(
+        cls,
+        *,
+{% for member in model.members if member.required %}
+        {{ member.name }}: {{ member.annotation }},
+{% endfor %}
+{% for member in model.members if not member.required %}
+        {{ member.name }}: {{ member.annotation }} | _Unset = _UNSET,
+{% endfor %}
+    ) -> {{ model.name }}:
+        """Create with typed members; omitted optionals are not written.
+
+        Explicit None writes null. Validate the extension to check value constraints.
+        """
+        result = cls({})
+{% for member in model.members %}
+{% if not member.required %}
+        if {{ member.name }} is not _UNSET:
+            result.properties[{{ member.key|py }}] = _encode({{ member.name }})
+{% else %}
+        result.properties[{{ member.key|py }}] = _encode({{ member.name }})
+{% endif %}
+{% endfor %}
+        return result
+
+    def apply(
+        self,
+        *,
+{% for member in model.members %}
+        {{ member.name }}: {{ member.annotation|optional }} | _Unset = _UNSET,
+{% endfor %}
+    ) -> None:
+        """Update supplied members; omitted values are preserved and None removes."""
+{% for member in model.members %}
+        if {{ member.name }} is not _UNSET:
+            self.{{ member.name }} = {{ member.name }}
+{% endfor %}
+
+{% for member in model.members %}
+    @property
+    def {{ member.name }}(self) -> {% if member.required %}{{ member.annotation }}{% else %}{{ member.annotation|optional }}{% endif %}:
+        {{ member.description|py }}
+{% if member.required %}
+        if {{ member.key|py }} not in self.properties:
+            raise pystac.STACError({{ ("Missing required property: " + member.key)|py }})
+{% endif %}
+        return _decode(self.properties.get({{ member.key|py }}), {{ member.codec|py }})
+
+    @{{ member.name }}.setter
+    def {{ member.name }}(self, value: {{ member.annotation|optional }}) -> None:
+        if value is None:
+            self.properties.pop({{ member.key|py }}, None)
+        else:
+            self.properties[{{ member.key|py }}] = _encode(value)
+
+{% endfor %}
+{% endfor %}
+_MODELS = {
+{% for model in models %}
+    {{ model.name|py }}: {{ model.name }},
+{% endfor %}
+}
+
+

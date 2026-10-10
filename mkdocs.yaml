@@ -1,0 +1,65 @@
+# Copyright 2026 Terradue
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+site_name: PySTAC extension generator
+site_description: Generate standalone PySTAC-compatible extension classes from STAC Extension JSON Schemas.
+site_url: https://terradue.github.io/pystac-ext-generator/
+repo_url: https://github.com/Terradue/pystac-ext-generator
+repo_name: pystac-ext-generator
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - Overview: tutorials/index.md
+      - First steps: tutorials/first-steps.md
+  - How-to guides:
+      - Overview: how-to/index.md
+      - Install: how-to/install.md
+      - Use generated extensions: how-to/use-extension.md
+      - Bundle external references: how-to/references.md
+  - Reference:
+      - Overview: reference/index.md
+      - CLI: reference/cli.md
+      - Generated classes and fields: reference/fields.md
+      - Python API: reference/api.md
+  - Explanation:
+      - Overview: explanation/index.md
+      - Architecture: explanation/architecture.md
+
+theme:
+  name: readthedocs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
