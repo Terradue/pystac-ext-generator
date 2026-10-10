@@ -1,5 +1,10 @@
 # pystac-ext-generator
 
+[![PyPI - Version](https://img.shields.io/pypi/v/pystac-ext-generator.svg)](https://pypi.org/project/pystac-ext-generator)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pystac-ext-generator.svg)](https://pypi.org/project/pystac-ext-generator)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/terradue/pystac-ext-generator/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/terradue/pystac-ext-generator/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/terradue/pystac-ext-generator/develop?logo=codecov)](https://app.codecov.io/gh/terradue/pystac-ext-generator/tree/develop)
+
 A Python CLI that generates an independently importable, typed **PySTAC extension
 module** from a STAC Extension JSON Schema. Uses Click, Jinja2, and PySTAC;
 verification uses pytest and actual PySTAC objects. Version 0.2 adds generated nested
@@ -294,3 +299,7 @@ Storage, plus Render, have integration tests; Projection explicitly tests the di
 unbundled external references. See `tests/fixtures/README.md` for provenance.
 
 GitHub Actions covers Python 3.10–3.14; tests run locally on Python 3.12.
+
+## License
+
+[![Apache License, Version 2.0](https://img.shields.io/badge/license-Apache%20License%202.0-blue)](https://www.apache.org/licenses/LICENSE-2.0)
