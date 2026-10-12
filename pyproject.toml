@@ -48,7 +48,7 @@ classifiers = [
 ]
 dependencies = [
     "click>=8.1,<9",
-    "Jinja2>=3.1,<4",
+    "Jinja2>=3.1.6,<4",
     "pystac>=1.12,<2",
     "jsonschema>=4.23,<5",
     "jsonref>=1.1.0,<2",
