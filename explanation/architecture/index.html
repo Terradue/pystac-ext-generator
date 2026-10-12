@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://terradue.github.io/pystac-ext-generator/explanation/architecture/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Architecture - PySTAC extension generator</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Architecture";
+        var mkdocs_page_input_path = "explanation/architecture.md";
+        var mkdocs_page_url = "/pystac-ext-generator/explanation/architecture/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PySTAC extension generator
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-steps/">First steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/install/">Install</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/use-extension/">Use generated extensions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/references/">Bundle external references</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/fields/">Generated classes and fields</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/api/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#from-schema-to-source">From schema to source</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#runtime-integration">Runtime integration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#validation-boundaries">Validation boundaries</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#limitations">Limitations</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PySTAC extension generator</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Explanation</li>
+      <li class="breadcrumb-item active">Architecture</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/pystac-ext-generator/edit/main/docs/explanation/architecture.md">Edit on pystac-ext-generator</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <!--
+Copyright 2026 Terradue
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<h1 id="architecture-and-validation">Architecture and validation<a class="headerlink" href="#architecture-and-validation" title="Permanent link">&para;</a></h1>
+<h2 id="from-schema-to-source">From schema to source<a class="headerlink" href="#from-schema-to-source" title="Permanent link">&para;</a></h2>
+<p>The generator reads a full STAC Extension JSON Schema and follows references from
+STAC object locations. Item metadata lives under <code>properties</code>; Collection and
+Catalog metadata lives at the top level. Assets, item asset definitions, Links,
+and Collection summaries are discovered through their respective containers.
+Root type constraints restrict applicable branches. Unused definitions are not
+turned into extension fields just because they exist.</p>
+<p>The title supplies the extension class name, and <code>$id</code> supplies the registration
+URI. Field names and constraints come from the schema, with no separate class,
+URI, field-pointer, or target overrides.</p>
+<p>The package separates these responsibilities:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cli.py</code></td>
+<td>Load inputs, handle options, report diagnostics, and write output.</td>
+</tr>
+<tr>
+<td><code>bundle.py</code></td>
+<td>Copy and embed explicitly supplied or fetched external resources.</td>
+</tr>
+<tr>
+<td><code>schema.py</code></td>
+<td>Resolve local pointers and discover fields and STAC targets.</td>
+</tr>
+<tr>
+<td><code>models.py</code></td>
+<td>Build internal rendering metadata for nested classes and conversion plans.</td>
+</tr>
+<tr>
+<td><code>generator.py</code></td>
+<td>Validate the schema, render templates, and check output syntax.</td>
+</tr>
+<tr>
+<td>Jinja2 templates</td>
+<td>Emit the standalone extension and nested value classes.</td>
+</tr>
+</tbody>
+</table>
+<p>Change the input schema and regenerate to change an extension contract. Generated
+files are artifacts; manual edits will be lost during regeneration.</p>
+<h2 id="runtime-integration">Runtime integration<a class="headerlink" href="#runtime-integration" title="Permanent link">&para;</a></h2>
+<p>A generated extension wraps an existing PySTAC object and writes its normal
+metadata dictionaries. PySTAC handles serialization through <code>to_dict()</code> and
+<code>from_dict()</code>. Nested generated values encode as plain JSON objects and arrays.</p>
+<p>Call the generated class's <code>ext()</code> method directly. Generation does not install
+into <code>pystac.extensions</code>, register an <code>item.ext</code> accessor, or provide migration
+hooks. Extension membership checks the exact canonical schema version.</p>
+<p>Lean output contains PySTAC wrappers and only the required conversion helpers.
+Themes needs no jsonschema dependency or embedded schema. <code>--include-validation</code>
+adds an offline extension validator. Nested object unions also embed the schema
+and use jsonschema when matching a representation requires validation. Wide
+factory signatures use typing-extensions. The generator, Ruff, and the template
+engine are not dependencies of emitted modules.</p>
+<h2 id="validation-boundaries">Validation boundaries<a class="headerlink" href="#validation-boundaries" title="Permanent link">&para;</a></h2>
+<p>Generation validates the schema itself, parses the generated Python source,
+normalizes imports, and formats it with Ruff.
+It does not execute the emitted module or validate future data values.</p>
+<p>At runtime, property annotations describe expected values. Setters and <code>apply()</code>
+do not enforce every schema constraint. <code>apply()</code> checks all field names and
+targets before mutation, then assigns values; it is not a general transactional
+update if serialization of a later value fails. Nested factories enforce the
+presence of unconditional required arguments.</p>
+<p>By default, use PySTAC's <code>item.validate()</code> or the equivalent owning-object method
+for schema validation. This uses PySTAC's normal registered-schema resolver.
+When generated with <code>--include-validation</code>, <code>extension.validate()</code> checks the
+complete object against the embedded extension schema, including bounds, formats,
+and conditional constraints, without retrieving the extension schema.
+For Assets, Links, and ItemAssetDefinitions, validation uses the owning STAC
+object and requires an owner. Serialization alone does not validate metadata.</p>
+<p>The optional embedded validator checks the extension schema, not STAC core.
+PySTAC's object-level <code>validate()</code> also covers core validation; its schema
+resolution and network behavior are separate from the embedded validator.</p>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Conditional applicability is approximated and produces a generation warning.
+  Accessor availability does not establish that every combination is schema-valid.</li>
+<li>Standalone field-definition fragments do not identify STAC targets. Supply the
+  complete extension schema and reference fields from their intended locations.</li>
+<li>Unprefixed STAC core/common metadata names are reserved during field discovery.
+  Declared extension fields outside that set, such as <code>renders</code>, are supported.</li>
+<li>Recursive records are supported. Recursive non-object values can use <code>Any</code> at
+  recursion boundaries and produce warnings; complex intersections can also have
+  conservative annotations without losing validation constraints.</li>
+<li>Ambiguous nested object unions raise an error when no unique representation
+  can be selected. Inspect raw properties or fix the data before decoding again.</li>
+<li>Heterogeneous pattern-property maps and tuple arrays remain raw JSON values
+  with warnings. Dynamic property names do not become named accessors.</li>
+<li>Nested <code>$id</code> scopes, named anchors, <code>$dynamicRef</code>, <code>$recursiveRef</code>, and mixed
+  schema dialects in bundles are rejected.</li>
+<li>Domain-specific calculations, migrations, and custom semantic helpers are not
+  generated. Nested Band records can be modeled, but Band-level attachment helpers
+  are not generated.</li>
+</ul>
+<p>Use <code>--strict</code> when generation warnings should stop your build. Keep schema
+sources under version control and review regenerated modules alongside schema changes.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/pystac-ext-generator" class="fa fa-code-fork" style="color: #fcfcfc"> pystac-ext-generator</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

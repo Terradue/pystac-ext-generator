@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://terradue.github.io/pystac-ext-generator/tutorials/first-steps/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>First steps - PySTAC extension generator</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "First steps";
+        var mkdocs_page_input_path = "tutorials/first-steps.md";
+        var mkdocs_page_url = "/pystac-ext-generator/tutorials/first-steps/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PySTAC extension generator
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">First steps</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-save-the-extension-schema">1. Save the extension schema</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-generate-the-python-module">2. Generate the Python module</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-use-the-generated-classes">3. Use the generated classes</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/install/">Install</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/use-extension/">Use generated extensions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/references/">Bundle external references</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/fields/">Generated classes and fields</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/api/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PySTAC extension generator</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Tutorials</li>
+      <li class="breadcrumb-item active">First steps</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/pystac-ext-generator/edit/main/docs/tutorials/first-steps.md">Edit on pystac-ext-generator</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <!--
+Copyright 2026 Terradue
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<h1 id="generate-your-first-extension">Generate your first extension<a class="headerlink" href="#generate-your-first-extension" title="Permanent link">&para;</a></h1>
+<p><a href="../../how-to/install/">Install the CLI</a>, then work in an empty directory. This
+example defines a small quality-metadata extension for Items and their Assets.</p>
+<h2 id="1-save-the-extension-schema">1. Save the extension schema<a class="headerlink" href="#1-save-the-extension-schema" title="Permanent link">&para;</a></h2>
+<p>Save the following as <code>quality-schema.json</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://json-schema.org/draft/2020-12/schema"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"$id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://example.org/quality/v1.0.0/schema.json"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Quality Extension"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"type"</span><span class="p">,</span><span class="w"> </span><span class="s2">"stac_extensions"</span><span class="p">,</span><span class="w"> </span><span class="s2">"properties"</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"const"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Feature"</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"stac_extensions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"array"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"contains"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"const"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://example.org/quality/v1.0.0/schema.json"</span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/fields"</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"assets"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/fields"</span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"$defs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"fields"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"quality:score"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Quality score between zero and one."</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"number"</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"maximum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"quality:details"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"$ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#/$defs/quality_details"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"quality_details"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"method"</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"method"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"samples"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"integer"</span><span class="p">,</span><span class="w"> </span><span class="nt">"minimum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The <code>example.org</code> identifier is illustrative. This tutorial validates against the
+schema embedded in the generated module, so that URL does not need to resolve.
+Use a published canonical schema URL for an extension you distribute.</p>
+<h2 id="2-generate-the-python-module">2. Generate the Python module<a class="headerlink" href="#2-generate-the-python-module" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pystac-ext-generator<span class="w"> </span>quality-schema.json<span class="w"> </span>--include-validation<span class="w"> </span>-o<span class="w"> </span>quality_extension.py
+</code></pre></div>
+<p>This tutorial opts into embedded validation so its illustrative schema can be
+validated offline. Without <code>--include-validation</code>, use PySTAC
+<code>item.validate()</code> and a published or locally configured schema resolver.</p>
+<p>The title produces <code>QualityExtension</code>, and the referenced object definition
+produces <code>QualityDetails</code>. The references under Item <code>properties</code> and <code>assets</code>
+establish applicability automatically. Existing output files are protected;
+pass <code>--force</code> when regenerating intentionally.</p>
+<h2 id="3-use-the-generated-classes">3. Use the generated classes<a class="headerlink" href="#3-use-the-generated-classes" title="Permanent link">&para;</a></h2>
+<p>Save this as <code>use_quality.py</code> next to the generated module:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pystac</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">quality_extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">QualityDetails</span><span class="p">,</span> <span class="n">QualityExtension</span>
+
+<span class="n">item</span> <span class="o">=</span> <span class="n">pystac</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">"quality-example"</span><span class="p">,</span>
+    <span class="n">geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">bbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">datetime</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+    <span class="n">properties</span><span class="o">=</span><span class="p">{},</span>
+<span class="p">)</span>
+<span class="n">extension</span> <span class="o">=</span> <span class="n">QualityExtension</span><span class="o">.</span><span class="n">ext</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">add_if_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+    <span class="n">score</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">details</span><span class="o">=</span><span class="n">QualityDetails</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"manual"</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">12</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+<span class="n">serialized</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()))</span>
+<span class="k">assert</span> <span class="n">serialized</span><span class="p">[</span><span class="s2">"properties"</span><span class="p">][</span><span class="s2">"quality:score"</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.9</span>
+<span class="k">assert</span> <span class="n">QualityExtension</span><span class="o">.</span><span class="n">get_schema_uri</span><span class="p">()</span> <span class="ow">in</span> <span class="n">serialized</span><span class="p">[</span><span class="s2">"stac_extensions"</span><span class="p">]</span>
+
+<span class="n">restored_item</span> <span class="o">=</span> <span class="n">pystac</span><span class="o">.</span><span class="n">Item</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+<span class="n">restored</span> <span class="o">=</span> <span class="n">QualityExtension</span><span class="o">.</span><span class="n">ext</span><span class="p">(</span><span class="n">restored_item</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">restored</span><span class="o">.</span><span class="n">details</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"manual"</span>
+<span class="k">assert</span> <span class="n">restored</span><span class="o">.</span><span class="n">details</span><span class="o">.</span><span class="n">samples</span> <span class="o">==</span> <span class="mi">12</span>
+<span class="n">restored</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</code></pre></div>
+<p>Run it:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>use_quality.py
+</code></pre></div>
+<p><code>add_if_missing=True</code> registers the schema URI on the Item. Nested value classes
+serialize as ordinary JSON objects. <code>validate()</code> checks the whole Item against
+the embedded extension schema; <code>to_dict()</code> alone does not validate values.</p>
+<p>Continue with <a href="../../how-to/use-extension/">updates, asset inheritance, and nested values</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../how-to/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/pystac-ext-generator" class="fa fa-code-fork" style="color: #fcfcfc"> pystac-ext-generator</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../how-to/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

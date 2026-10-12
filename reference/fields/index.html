@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://terradue.github.io/pystac-ext-generator/reference/fields/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Generated classes and fields - PySTAC extension generator</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Generated classes and fields";
+        var mkdocs_page_input_path = "reference/fields.md";
+        var mkdocs_page_url = "/pystac-ext-generator/reference/fields/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PySTAC extension generator
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-steps/">First steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/install/">Install</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/use-extension/">Use generated extensions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/references/">Bundle external references</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Generated classes and fields</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#field-naming-and-types">Field naming and types</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#extension-operations">Extension operations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#nested-value-classes">Nested value classes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#module-metadata">Module metadata</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PySTAC extension generator</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+      <li class="breadcrumb-item active">Generated classes and fields</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/pystac-ext-generator/edit/main/docs/reference/fields.md">Edit on pystac-ext-generator</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <!--
+Copyright 2026 Terradue
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<h1 id="generated-classes-and-fields">Generated classes and fields<a class="headerlink" href="#generated-classes-and-fields" title="Permanent link">&para;</a></h1>
+<p>Every generated module contains an extension class named from the schema title.
+Nested record schemas produce value classes, and summary fields produce a
+<code>Summaries&lt;ClassName&gt;</code> helper. No domain-specific extension classes are built in.</p>
+<h2 id="field-naming-and-types">Field naming and types<a class="headerlink" href="#field-naming-and-types" title="Permanent link">&para;</a></h2>
+<p>The namespace is removed from Python attribute names: <code>quality:score</code> becomes
+<code>score</code>. JSON keys remain unchanged. Invalid identifier characters are normalized;
+Python keywords and wrapper-method collisions are escaped, such as <code>class_</code> and
+<code>apply_field</code>. Remaining ambiguous names can cause a generation error.</p>
+<table>
+<thead>
+<tr>
+<th>JSON Schema shape</th>
+<th>Python representation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>string</code>, including date/time formats</td>
+<td><code>str</code>; format validation happens during schema validation.</td>
+</tr>
+<tr>
+<td><code>number</code>, <code>integer</code>, <code>boolean</code>, <code>null</code></td>
+<td><code>float</code>, <code>int</code>, <code>bool</code>, <code>None</code>.</td>
+</tr>
+<tr>
+<td>Scalar <code>enum</code> or <code>const</code></td>
+<td><code>Literal[...]</code> where representable.</td>
+</tr>
+<tr>
+<td>Array with homogeneous items</td>
+<td><code>list[...]</code>.</td>
+</tr>
+<tr>
+<td>Object with declared members</td>
+<td>Generated nested value class.</td>
+</tr>
+<tr>
+<td>Homogeneous additional-properties map</td>
+<td><code>dict[str, ...]</code>, with typed values where supported.</td>
+</tr>
+<tr>
+<td>Open-ended object</td>
+<td>Raw dictionary.</td>
+</tr>
+<tr>
+<td><code>oneOf</code> / <code>anyOf</code></td>
+<td>Union annotations; nested codecs use schema validation to choose a representation.</td>
+</tr>
+</tbody>
+</table>
+<p>Absent extension fields return <code>None</code>. Setters preserve JSON values; annotations
+do not automatically coerce dates into <code>datetime</code> or enforce numeric bounds.
+The whole schema remains authoritative for validation.</p>
+<h2 id="extension-operations">Extension operations<a class="headerlink" href="#extension-operations" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Extension.ext(obj, add_if_missing=False)</code></td>
+<td>Wrap a supported target and check extension membership; optionally register it.</td>
+</tr>
+<tr>
+<td><code>get_schema_uri()</code></td>
+<td>Return the canonical registration URI.</td>
+</tr>
+<tr>
+<td><code>has_extension()</code>, <code>add_to()</code>, <code>remove_from()</code></td>
+<td>Manage the exact schema version on a STAC object.</td>
+</tr>
+<tr>
+<td>Typed properties</td>
+<td>Read or write fields at the appropriate storage location.</td>
+</tr>
+<tr>
+<td><code>apply(**values)</code></td>
+<td>Update supplied Python field names; precheck unknown/inapplicable names.</td>
+</tr>
+<tr>
+<td><code>clear(name)</code></td>
+<td>Remove a field by its Python name.</td>
+</tr>
+<tr>
+<td><code>set_null(name)</code></td>
+<td>Store explicit JSON null; schema validation determines whether it is allowed.</td>
+</tr>
+<tr>
+<td><code>validate()</code> (opt-in)</td>
+<td>With <code>--include-validation</code>, validate the wrapped object or its owner against the embedded schema.</td>
+</tr>
+<tr>
+<td><code>summaries(collection, add_if_missing=False)</code></td>
+<td>Wrap Collection summaries when supported by the schema.</td>
+</tr>
+</tbody>
+</table>
+<p>Items store fields in <code>properties</code>; Collections, Catalogs, Assets, and Links use
+<code>extra_fields</code>; ItemAssetDefinitions use <code>properties</code>. Assets fall back to Item
+properties for missing values. Summary helpers preserve lists, ranges, and schema
+objects. They expose field properties, rather than an extension-style <code>apply()</code>.</p>
+<h2 id="nested-value-classes">Nested value classes<a class="headerlink" href="#nested-value-classes" title="Permanent link">&para;</a></h2>
+<p>Nested classes provide <code>create()</code>, <code>from_dict(properties, copy=False)</code>, <code>to_dict()</code>,
+typed properties, <code>apply()</code>, <code>clear()</code>, and <code>set_null()</code>. Required factory arguments
+come from unconditional requirements, including merged <code>allOf</code> object fields.
+<code>create()</code> preserves explicit <code>None</code>; setters and <code>apply()</code> remove fields assigned
+<code>None</code>. Unknown JSON properties survive round-trips.</p>
+<p>Class names use reference names when meaningful, otherwise field naming hints.
+Collisions receive numeric suffixes, equivalent shapes may share a class, and
+recursive records use forward annotations. See <a href="../../how-to/use-extension/#edit-nested-values">mutation semantics</a>
+for live views versus copied assignments.</p>
+<p>Large nested classes use schema-generated <code>TypedDict</code> keyword declarations with
+<code>Unpack</code> for <code>create()</code> and <code>apply()</code>. These preserve named argument typing and
+required members without oversized function signatures. Runtime checks still reject
+unknown keywords and missing required values before mutation.</p>
+<h2 id="module-metadata">Module metadata<a class="headerlink" href="#module-metadata" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>SCHEMA</code> (conditional): the original or bundled schema, emitted for optional
+  offline validation or schema-dependent union decoding.</li>
+<li><code>SCHEMA_URI</code>: canonical registration identifier.</li>
+<li><code>FIELD_NAMES</code>: Python attribute names mapped to JSON keys.</li>
+<li><code>FIELD_TARGETS</code>: JSON keys mapped to their discovered targets.</li>
+<li><code>TARGETS</code>: the module's combined applicability.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cli/" class="btn btn-neutral float-left" title="CLI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api/" class="btn btn-neutral float-right" title="Python API">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/pystac-ext-generator" class="fa fa-code-fork" style="color: #fcfcfc"> pystac-ext-generator</a>
+        </span>
+    
+    
+      <span><a href="../cli/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../api/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://terradue.github.io/pystac-ext-generator/how-to/references/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Bundle external references - PySTAC extension generator</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Bundle external references";
+        var mkdocs_page_input_path = "how-to/references.md";
+        var mkdocs_page_url = "/pystac-ext-generator/how-to/references/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PySTAC extension generator
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-steps/">First steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">Install</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../use-extension/">Use generated extensions</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Bundle external references</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#choose-an-input-source">Choose an input source</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#resolve-external-documents-offline">Resolve external documents offline</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fetch-external-documents">Fetch external documents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#regenerate-reproducibly">Regenerate reproducibly</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/fields/">Generated classes and fields</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/api/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PySTAC extension generator</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">How-to guides</li>
+      <li class="breadcrumb-item active">Bundle external references</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/pystac-ext-generator/edit/main/docs/how-to/references.md">Edit on pystac-ext-generator</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <!--
+Copyright 2026 Terradue
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<h1 id="load-schemas-and-bundle-references">Load schemas and bundle references<a class="headerlink" href="#load-schemas-and-bundle-references" title="Permanent link">&para;</a></h1>
+<h2 id="choose-an-input-source">Choose an input source<a class="headerlink" href="#choose-an-input-source" title="Permanent link">&para;</a></h2>
+<p>The positional <code>SCHEMA</code> argument accepts a UTF-8 JSON file, an HTTP(S) URL, or
+<code>-</code> for stdin:</p>
+<div class="highlight"><pre><span></span><code>pystac-ext-generator<span class="w"> </span>schema.json<span class="w"> </span>-o<span class="w"> </span>extension.py
+pystac-ext-generator<span class="w"> </span>https://stac-extensions.github.io/view/v1.1.0/schema.json<span class="w"> </span>-o<span class="w"> </span>view_extension.py
+cat<span class="w"> </span>schema.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>pystac-ext-generator<span class="w"> </span>-<span class="w"> </span>&gt;<span class="w"> </span>extension.py
+</code></pre></div>
+<p>The schema must have a usable <code>title</code> and an absolute HTTP(S) <code>$id</code>, regardless
+of its input location. Diagnostics go to stderr and generated source goes to
+stdout unless <code>--output</code> is supplied. Use trusted schema sources.</p>
+<h2 id="resolve-external-documents-offline">Resolve external documents offline<a class="headerlink" href="#resolve-external-documents-offline" title="Permanent link">&para;</a></h2>
+<p>Local JSON Pointers such as <code>#/$defs/fields</code> work automatically. References to
+other documents need explicit resource mappings or opt-in fetching.</p>
+<div class="highlight"><pre><span></span><code>pystac-ext-generator<span class="w"> </span>schema.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--reference<span class="w"> </span><span class="s1">'https://example.org/common/schema.json=common-schema.json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span>extension.py
+</code></pre></div>
+<p>Repeat <code>--reference URI=FILE</code> for every external resource needed. The URI must
+match the resource's resolved absolute URL. Relative references resolve against
+the root schema's canonical <code>$id</code>, not its local filename.</p>
+<h2 id="fetch-external-documents">Fetch external documents<a class="headerlink" href="#fetch-external-documents" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pystac-ext-generator<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>https://stac-extensions.github.io/storage/v2.0.0/schema.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--resolve-external<span class="w"> </span>-o<span class="w"> </span>storage_extension.py
+</code></pre></div>
+<p><code>--resolve-external</code> permits HTTP(S) requests for missing external resources.
+It can be combined with offline mappings; mapped resources are used first.
+Each HTTP operation has a 30-second timeout. Bundling accepts at most 100
+external documents and requires compatible schema dialects.</p>
+<p>Bundling embeds the external documents and rewrites their references into local
+JSON Pointers. Add <code>--include-validation</code> to emit an offline extension validator
+using the bundled schema. Without that flag, normal full-object validation stays
+with PySTAC and its schema resolver; nested union decoding embeds the schema only
+when it needs it. The root <code>$id</code> remains the registration identifier.</p>
+<h2 id="regenerate-reproducibly">Regenerate reproducibly<a class="headerlink" href="#regenerate-reproducibly" title="Permanent link">&para;</a></h2>
+<p>Keep the source schema and referenced files under version control, use offline
+mappings, and regenerate with <code>--force</code> after reviewing schema changes. <code>--strict</code>
+turns generation warnings into errors, useful when approximate conditional
+applicability or conservative annotations are unacceptable for your workflow.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../use-extension/" class="btn btn-neutral float-left" title="Use generated extensions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../reference/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/pystac-ext-generator" class="fa fa-code-fork" style="color: #fcfcfc"> pystac-ext-generator</a>
+        </span>
+    
+    
+      <span><a href="../use-extension/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

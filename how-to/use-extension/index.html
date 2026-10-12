@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://terradue.github.io/pystac-ext-generator/how-to/use-extension/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Use generated extensions - PySTAC extension generator</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Use generated extensions";
+        var mkdocs_page_input_path = "how-to/use-extension.md";
+        var mkdocs_page_url = "/pystac-ext-generator/how-to/use-extension/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PySTAC extension generator
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-steps/">First steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">Install</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Use generated extensions</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#update-or-remove-fields">Update or remove fields</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#attach-asset-metadata">Attach asset metadata</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#edit-nested-values">Edit nested values</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#use-a-collection-summary-helper">Use a Collection summary helper</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../references/">Bundle external references</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/fields/">Generated classes and fields</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/api/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PySTAC extension generator</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">How-to guides</li>
+      <li class="breadcrumb-item active">Use generated extensions</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/pystac-ext-generator/edit/main/docs/how-to/use-extension.md">Edit on pystac-ext-generator</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <!--
+Copyright 2026 Terradue
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<h1 id="use-generated-extension-classes">Use generated extension classes<a class="headerlink" href="#use-generated-extension-classes" title="Permanent link">&para;</a></h1>
+<p>The first examples continue from the <code>item</code> and <code>extension</code> created in the
+<a href="../../tutorials/first-steps/">tutorial</a>, which enables <code>--include-validation</code>.
+For default lean output, use the owning STAC object's <code>validate()</code> through PySTAC.</p>
+<h2 id="update-or-remove-fields">Update or remove fields<a class="headerlink" href="#update-or-remove-fields" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">extension</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">extension</span><span class="o">.</span><span class="n">details</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">"manual"</span>  <span class="c1"># Omitted fields are preserved.</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">assert</span> <span class="s2">"quality:details"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="s2">"score"</span><span class="p">)</span>
+<span class="k">assert</span> <span class="s2">"quality:score"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mf">0.9</span>
+</code></pre></div>
+<p><code>apply()</code> uses generated Python attribute names and updates only supplied fields.
+Unknown or inapplicable names are rejected before any update. Assigning <code>None</code>
+or calling <code>clear()</code> removes a field. To store explicit JSON null, use
+<code>set_null("score")</code>; the tutorial schema does not allow null for score, so
+subsequent validation would reject it.</p>
+<h2 id="attach-asset-metadata">Attach asset metadata<a class="headerlink" href="#attach-asset-metadata" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">asset</span> <span class="o">=</span> <span class="n">pystac</span><span class="o">.</span><span class="n">Asset</span><span class="p">(</span><span class="s2">"https://example.org/image.tif"</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">"image/tiff"</span><span class="p">)</span>
+<span class="n">item</span><span class="o">.</span><span class="n">add_asset</span><span class="p">(</span><span class="s2">"image"</span><span class="p">,</span> <span class="n">asset</span><span class="p">)</span>
+<span class="n">asset_extension</span> <span class="o">=</span> <span class="n">QualityExtension</span><span class="o">.</span><span class="n">ext</span><span class="p">(</span><span class="n">asset</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">asset_extension</span><span class="o">.</span><span class="n">score</span> <span class="o">==</span> <span class="mf">0.9</span>  <span class="c1"># Falls back to the owning Item.</span>
+<span class="n">asset_extension</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="k">assert</span> <span class="n">asset</span><span class="o">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s2">"quality:score"</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.7</span>
+<span class="k">assert</span> <span class="n">extension</span><span class="o">.</span><span class="n">score</span> <span class="o">==</span> <span class="mf">0.9</span>
+<span class="n">asset_extension</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</code></pre></div>
+<p>An Asset reads missing fields from its owning Item. An explicit asset value,
+including JSON null, takes precedence. Writes affect the Asset. Registration and
+full-schema validation use its owner, so attach assets before those operations.
+The same ownership requirement applies to Links and ItemAssetDefinitions.
+Only schema-discovered targets can be wrapped.</p>
+<h2 id="edit-nested-values">Edit nested values<a class="headerlink" href="#edit-nested-values" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">extension</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="n">QualityDetails</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"automatic"</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">details</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s2">"reviewed"</span>
+<span class="k">assert</span> <span class="n">item</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">"quality:details"</span><span class="p">][</span><span class="s2">"method"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"reviewed"</span>
+<span class="n">extension</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</code></pre></div>
+<p>Nested wrappers expose <code>create()</code>, <code>from_dict()</code>, <code>to_dict()</code>, typed properties,
+and partial <code>apply()</code>. <code>create()</code> requires unconditionally required members, but
+full schema constraints are checked by the parent extension's <code>validate()</code>.
+Required nullable members may be supplied as <code>None</code> when the schema allows it.</p>
+<p>Nested property edits update the underlying JSON. Containers of wrappers are
+fresh views: after adding or removing list/map entries, assign the container
+back to its property. Assigning a nested object copies its serialized data; later
+changes to the original object do not change the assigned copy.</p>
+<h2 id="use-a-collection-summary-helper">Use a Collection summary helper<a class="headerlink" href="#use-a-collection-summary-helper" title="Permanent link">&para;</a></h2>
+<p>From the repository checkout, generate the included View schema:</p>
+<div class="highlight"><pre><span></span><code>pystac-ext-generator<span class="w"> </span>tests/fixtures/view.json<span class="w"> </span>-o<span class="w"> </span>view_extension.py
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pystac</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">view_extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ViewGeometryExtension</span>
+
+<span class="n">collection</span> <span class="o">=</span> <span class="n">pystac</span><span class="o">.</span><span class="n">Collection</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">"view-example"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s2">"Images with viewing geometry"</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="n">pystac</span><span class="o">.</span><span class="n">Extent</span><span class="p">(</span>
+        <span class="n">pystac</span><span class="o">.</span><span class="n">SpatialExtent</span><span class="p">([</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">90</span><span class="p">]),</span>
+        <span class="n">pystac</span><span class="o">.</span><span class="n">TemporalExtent</span><span class="p">([[</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span> <span class="kc">None</span><span class="p">]]),</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="n">summaries</span> <span class="o">=</span> <span class="n">ViewGeometryExtension</span><span class="o">.</span><span class="n">summaries</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">add_if_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">summaries</span><span class="o">.</span><span class="n">off_nadir</span> <span class="o">=</span> <span class="n">pystac</span><span class="o">.</span><span class="n">RangeSummary</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">summaries</span><span class="o">.</span><span class="n">off_nadir</span><span class="o">.</span><span class="n">maximum</span> <span class="o">==</span> <span class="mi">30</span>
+<span class="n">summaries</span><span class="o">.</span><span class="n">off_nadir</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p>Summary helpers are generated only for fields found under Collection summaries.
+They preserve lists, range summaries, and JSON Schema dictionaries, and do not
+aggregate Item values automatically. Top-level Collection fields use <code>ext()</code>
+when the schema declares that target; summary-only support does not imply it.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../install/" class="btn btn-neutral float-left" title="Install"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../references/" class="btn btn-neutral float-right" title="Bundle external references">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/pystac-ext-generator" class="fa fa-code-fork" style="color: #fcfcfc"> pystac-ext-generator</a>
+        </span>
+    
+    
+      <span><a href="../install/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../references/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

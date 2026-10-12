@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://terradue.github.io/pystac-ext-generator/reference/cli/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>CLI - PySTAC extension generator</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "CLI";
+        var mkdocs_page_input_path = "reference/cli.md";
+        var mkdocs_page_url = "/pystac-ext-generator/reference/cli/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> PySTAC extension generator
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-steps/">First steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/install/">Install</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/use-extension/">Use generated extensions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/references/">Bundle external references</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">CLI</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#schema-derived-settings">Schema-derived settings</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#generated-code-quality">Generated-code quality</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#output-and-errors">Output and errors</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fields/">Generated classes and fields</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">PySTAC extension generator</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+      <li class="breadcrumb-item active">CLI</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/pystac-ext-generator/edit/main/docs/reference/cli.md">Edit on pystac-ext-generator</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <!--
+Copyright 2026 Terradue
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<h1 id="cli-reference">CLI reference<a class="headerlink" href="#cli-reference" title="Permanent link">&para;</a></h1>
+<div class="highlight"><pre><span></span><code>pystac-ext-generator [OPTIONS] SCHEMA
+</code></pre></div>
+<p><code>SCHEMA</code> is a JSON file path, HTTP(S) URL, or <code>-</code> for stdin.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-o</code>, <code>--output FILE</code></td>
+<td>Write generated Python to a file; default is stdout.</td>
+</tr>
+<tr>
+<td><code>--prefix PREFIX</code></td>
+<td>Select a field namespace without its colon when multiple namespaces occur.</td>
+</tr>
+<tr>
+<td><code>--reference URI=FILE</code></td>
+<td>Supply an offline external schema mapping; repeat as needed.</td>
+</tr>
+<tr>
+<td><code>--resolve-external</code></td>
+<td>Fetch missing external HTTP(S) schema resources.</td>
+</tr>
+<tr>
+<td><code>--include-validation</code></td>
+<td>Embed the complete schema and an offline extension <code>validate()</code> method.</td>
+</tr>
+<tr>
+<td><code>--strict</code></td>
+<td>Treat generation warnings as errors.</td>
+</tr>
+<tr>
+<td><code>--force</code></td>
+<td>Permit overwriting the output file.</td>
+</tr>
+<tr>
+<td><code>--version</code></td>
+<td>Print the version from the package's shared version source.</td>
+</tr>
+<tr>
+<td><code>-h</code>, <code>--help</code></td>
+<td>Print usage information.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="schema-derived-settings">Schema-derived settings<a class="headerlink" href="#schema-derived-settings" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Schema content</th>
+<th>Generated result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>title</code></td>
+<td>PascalCase class name, with <code>Extension</code> appended if absent.</td>
+</tr>
+<tr>
+<td><code>$id</code></td>
+<td>Canonical HTTP(S) registration URI; a trailing empty <code>#</code> is removed.</td>
+</tr>
+<tr>
+<td>Field placement and references</td>
+<td>Accessors at the applicable STAC object locations.</td>
+</tr>
+<tr>
+<td>Root <code>properties.type.const</code> or <code>enum</code></td>
+<td>Object-type restrictions for the schema branch.</td>
+</tr>
+<tr>
+<td>Object properties, required members, and references</td>
+<td>Nested value classes and their factory parameters.</td>
+</tr>
+</tbody>
+</table>
+<p>For example, <code>View Geometry Extension</code> produces <code>ViewGeometryExtension</code>, and
+<code>STAC Storage Extension</code> produces <code>STACStorageExtension</code>. A title must contain
+ASCII letters or digits. Leading digits receive the prefix <code>Value</code>. Titles that
+collide with PySTAC base classes are rejected.</p>
+<p>The removed options <code>--class-name</code>, <code>--schema-uri</code>, <code>--fields-pointer</code>, and
+<code>--target</code> are not accepted. Their former Python API counterparts are also
+removed. Put that information in the full extension schema and update generated
+class imports when migrating from namespace-derived naming.</p>
+<h2 id="generated-code-quality">Generated-code quality<a class="headerlink" href="#generated-code-quality" title="Permanent link">&para;</a></h2>
+<p>Ruff normalizes imports and formats generated source. The generator emits only
+needed conversions and schema-derived types. Its regression suite applies this
+repository's Ruff, strict mypy, and Bandit settings to generated files themselves.
+No generated-file lint, typing, or security suppressions are needed for the covered schemas.</p>
+<p>Default output omits full validation. Schema-dependent nested union decoding may
+still embed the schema and require jsonschema. Use <code>--include-validation</code> to opt
+into a public offline validator.</p>
+<h2 id="output-and-errors">Output and errors<a class="headerlink" href="#output-and-errors" title="Permanent link">&para;</a></h2>
+<p>Generated Python is deterministic for the same schema and options. Output
+parent directories are created when needed. Existing files are preserved unless
+<code>--force</code> is given. Generation warnings and file-output notices go to stderr.
+Errors produce a nonzero exit status, including invalid schemas, missing external
+resources, unsupported reference scopes, and fields that cannot be discovered.</p>
+<p>The generator supports JSON Schema draft-07, 2019-09, and 2020-12. If <code>$schema</code>
+is absent, validation uses draft 2020-12. See <a href="../../explanation/architecture/#limitations">limitations</a>
+for unsupported constructs.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../fields/" class="btn btn-neutral float-right" title="Generated classes and fields">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/pystac-ext-generator" class="fa fa-code-fork" style="color: #fcfcfc"> pystac-ext-generator</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../fields/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
