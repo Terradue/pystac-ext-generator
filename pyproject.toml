@@ -47,13 +47,13 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-    "click>=8.1,<9",
-    "Jinja2>=3.1,<4",
-    "pystac>=1.12,<2",
-    "jsonschema>=4.23,<5",
+    "click>=8.5.0,<9",
+    "Jinja2>=3.1.6,<4",
+    "pystac>=1.15.2,<2",
+    "jsonschema>=4.26.0,<5",
     "jsonref>=1.1.0,<2",
-    "ruff>=0.16.9,<0.17",
-    "typing-extensions>=4.12,<5"
+    "ruff>=0.16.10,<0.17",
+    "typing-extensions>=4.16.0,<5"
 ]
 
 # ---------------------------------------------------------------------------
@@ -127,8 +127,8 @@ exclude_lines = [
 [tool.hatch.envs.test]
 skip-install = false
 dependencies = [
-  "mypy>=2.3.1",
-  "types-jsonschema>=4.23,<5",
+  "mypy>=2.4.0",
+  "types-jsonschema>=4.26.0.20261006,<5",
   "bandit>=1.9.4",
   "pytest>=9.1.1,<10",
   "pytest-cov>=7.1.0,<8",
@@ -165,7 +165,7 @@ xfail_strict = true
 [tool.hatch.envs.dev]
 skip-install = false
 dependencies = [
-  "mypy>=2.3.1",
+  "mypy>=2.4.0",
   "types-jsonschema>=4.23,<5",
   "ruff>=0.16.9",
   "bandit>=1.9.4",
@@ -327,7 +327,7 @@ check = [
 # Preserve editable-install test extras and uv's local wheel resolution.
 [project.optional-dependencies]
 test = [
-  "mypy>=2.3.1",
+  "mypy>=2.4.0",
   "types-jsonschema>=4.23,<5",
   "bandit>=1.9.4",
   "pytest>=9.1.1,<10",
