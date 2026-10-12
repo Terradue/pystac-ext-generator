@@ -166,7 +166,7 @@ xfail_strict = true
 skip-install = false
 dependencies = [
   "mypy>=2.4.0",
-  "types-jsonschema>=4.23,<5",
+  "types-jsonschema>=4.26.0.20261006,<5",
   "ruff>=0.16.9",
   "bandit>=1.9.4",
   "pytest>=9.1.1,<10",
@@ -328,7 +328,7 @@ check = [
 [project.optional-dependencies]
 test = [
   "mypy>=2.4.0",
-  "types-jsonschema>=4.23,<5",
+  "types-jsonschema>=4.26.0.20261006,<5",
   "bandit>=1.9.4",
   "pytest>=9.1.1,<10",
   "pytest-cov>=7.1.0,<8"
