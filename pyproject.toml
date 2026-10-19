@@ -52,7 +52,7 @@ dependencies = [
     "pystac>=1.15.2,<2",
     "jsonschema>=4.26.0,<5",
     "jsonref>=1.1.0,<2",
-    "ruff>=0.16.10,<0.17",
+    "ruff>=0.17.1,<0.18",
     "typing-extensions>=4.16.0,<5"
 ]
 
